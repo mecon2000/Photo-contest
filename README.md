@@ -3,7 +3,7 @@ an application to hold a photo contest:
 
 
 ----------------------------------------------------------------
-OLD README:
+OLD READ ME:  
 
 The component allows for image upload with drag-and-drop functionality. The component can be extended to allow other file types like pdf, zip etc. The file storage service used is [IMGBB](https://imgbb.com/). Create an account and then obtain an API key from [https://api.imgbb.com/](https://api.imgbb.com/).
 
