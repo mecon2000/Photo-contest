@@ -1,0 +1,39 @@
+{
+  "photo": [
+    {
+      "id": 1,
+      "contestId": "1",
+      "userId": "1",
+      "photoBlob": "some blob"
+    }    
+  ],
+  "user": [
+    {
+      "userId": 1,
+      "phone": "0541111111",
+      "name": "Ronnie"
+    },
+    {
+      "userId": 2,
+      "phone": "0549999999",
+      "name": "Aviv"
+    }
+  ],
+  "contest": [
+    {
+      "contestId": 1,
+      "name": "rain",
+      "state": "uploading"
+    },
+    {
+      "contestId": 2,
+      "name": "b&w",
+      "state": "voting"
+    },
+    {
+      "contestId": 3,
+      "name": "red",
+      "state": "winners"
+    }
+  ]
+}
