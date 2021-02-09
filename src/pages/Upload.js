@@ -1,7 +1,6 @@
 import React from "react";
-import { photoService } from '../services/photoService';
+import { readAndUploadFiles } from "../services/photoService";
 export function Upload() {
-
   const onFilesDrop = (e) => {
     e.preventDefault();
 
@@ -24,41 +23,23 @@ export function Upload() {
     if (target.files.length) {
       handleFiles(target.files);
     }
-  }
+  };
+
   const handleFiles = async (files) => {
-    // console.log("files:", files);
-    // console.table(...files);
-    const promises = [];
-    [...files].forEach((file, i) => {
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      promises.push(
-        new Promise((resolve, reject) => {
-          reader.onload = function (e) {
-            const { name, size, lastModified, type } = file;
-            resolve({
-              lastModified,
-              name,
-              size,
-              type,
-              blob: e.target.result
-            })
-            reader.onerror = reject;
-          }
-        })
-      )
-
-    });
-    photoService.uploadPhotos(await Promise.all(promises))
-  }
+    try {
+      await readAndUploadFiles(files,1,2);
+      //show success
+    } catch (error) {
+      //show an error
+    }
+  };
 
   const noop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-  }
+  };
   return (
-    <main className='main-container'>
+    <main className="main-container">
       <h1>upload your photos here</h1>
       <label
         className="drop-container"
@@ -79,6 +60,5 @@ export function Upload() {
         />
       </label>
     </main>
-  )
+  );
 }
-
