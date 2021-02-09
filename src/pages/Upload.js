@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import { PhotosList } from "../cmps/PhotosList";
 import { readAndUploadFiles } from "../services/photoService";
+
 export function Upload() {
+  const [photos, setPhotos] = useState([]);
+
+
+
+
+
   const onFilesDrop = (e) => {
     e.preventDefault();
 
@@ -25,14 +33,19 @@ export function Upload() {
     }
   };
 
-  const handleFiles = async (files) => {
+  const handleFiles = (files) => {
+    setPhotos([...photos, ...files])
+  };
+
+  const uploadPhotos = async () => {
+
     try {
-      await readAndUploadFiles(files,1,2);
+      await readAndUploadFiles(photos, 1, 2);
       //show success
     } catch (error) {
       //show an error
     }
-  };
+  }
 
   const noop = (e) => {
     e.preventDefault();
@@ -41,6 +54,7 @@ export function Upload() {
   return (
     <main className="main-container">
       <h1>upload your photos here</h1>
+      {photos.length === 0 || <button className="file-upload-btn" onClick={() => uploadPhotos()}>Upload Files</button>}
       <label
         className="drop-container"
         onDragOver={noop}
@@ -59,6 +73,7 @@ export function Upload() {
           onChange={filesSelected}
         />
       </label>
+      <PhotosList files={photos} />
     </main>
   );
 }

@@ -1,7 +1,7 @@
 import Axios from "axios";
 
-const BASE_URL = "http://localhost:4000/api/";
-
+const BASE_URL = process.env.REACT_APP_AVIV?'/api/':"http://localhost:4000/api/";
+console.log(BASE_URL)
 var axios = Axios.create({
   witCredentials: true,
 });
