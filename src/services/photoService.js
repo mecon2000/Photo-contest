@@ -4,7 +4,7 @@ export const photoService = {
     uploadPhotos(photos) {
         // {photoBlob, }photos[0]
         try {
-            httpService.post(entity, { delitDis: 'now', name: photos });
+            return httpService.post(entity, photos);
         } catch (error) {
             console.error(error)
         }
