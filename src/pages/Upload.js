@@ -1,5 +1,8 @@
+
 import React from "react";
+import { FileList } from "../components/FileList";
 import { readAndUploadFiles } from "../services/photoService";
+
 export function Upload() {
   const onFilesDrop = (e) => {
     e.preventDefault();
@@ -41,6 +44,7 @@ export function Upload() {
   return (
     <main className="main-container">
       <h1>upload your photos here</h1>
+      <h1>NEW COMPONENT GOOODDDD!!!!!</h1>
       <label
         className="drop-container"
         onDragOver={noop}
@@ -59,6 +63,7 @@ export function Upload() {
           onChange={filesSelected}
         />
       </label>
+      <FileList/>
     </main>
   );
 }
