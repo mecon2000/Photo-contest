@@ -1,9 +1,13 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FileList } from "../components/FileList";
 import { readAndUploadFiles } from "../services/photoService";
 
 export function Upload() {
+  const [photoFiles, setPhotoFiles] = useState([]);
+  useEffect((prev) => {
+    console.log({prevPhotoFiles:prev,photoFiles:photoFiles});
+  }, [photoFiles])
+
   const onFilesDrop = (e) => {
     e.preventDefault();
 
@@ -22,19 +26,33 @@ export function Upload() {
       //   }
     }
   };
-  const filesSelected = ({ target }) => {
+  const onSelectedFilesChanged = ({ target }) => {
     if (target.files.length) {
       handleFiles(target.files);
     }
   };
 
-  const handleFiles = async (files) => {
-    try {
-      await readAndUploadFiles(files,1,2);
-      //show success
-    } catch (error) {
-      //show an error
+  const uniquify = (files) => {
+    return files.filter(
+      (file, index, arr) => index === arr.findIndex((v) => v.name === file.name)
+    );
+  };
+
+  const validateFile = (file) => {
+    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (validTypes.indexOf(file.type) === -1) {
+      return false;
     }
+    return true;
+  };
+
+  const validateFiles = (files) => {
+    return files.filter((file) => validateFile(file));
+  };
+
+  const handleFiles = async (newFiles) => {
+    const newFilesArr = Array.from(newFiles);
+    setPhotoFiles(uniquify([...photoFiles, ...validateFiles(newFilesArr)]));
   };
 
   const noop = (e) => {
@@ -60,10 +78,10 @@ export function Upload() {
           className="file-input"
           type="file"
           multiple
-          onChange={filesSelected}
+          onChange={onSelectedFilesChanged}
         />
       </label>
-      <FileList/>
+      <FileList validFiles={photoFiles} />
     </main>
   );
 }
