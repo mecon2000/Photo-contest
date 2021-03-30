@@ -14,12 +14,13 @@ export function FilePreview(props) {
     <div className="file-status-bar">
       <div
         onClick={
-          !data.invalid
+            !data.invalid
             ? () => openImageModal(data)
             : () => removeFile(data.name)
         }
       >
         <div className="file-type-logo"></div>
+        <img src={data.photoDataUrl} alt={data.name} style={{height:'60px'}}/>
         <div className="file-type">{fileType(data.name)}</div>
         <span className={`file-name ${data.invalid ? "file-error" : ""}`}>
           {data.name}

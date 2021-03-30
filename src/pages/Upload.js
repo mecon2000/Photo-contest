@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { FileList } from "../components/FileList";
-import { readAndUploadFiles } from "../services/photoService";
+import { readFileFromHd } from "../services/photoService";
 
 export function Upload() {
   const [photoFiles, setPhotoFiles] = useState([]);
-  useEffect((prev) => {
-    console.log({prevPhotoFiles:prev,photoFiles:photoFiles});
-  }, [photoFiles])
+  useEffect(
+    (prev) => {
+      console.log({ prevPhotoFiles: prev, photoFiles: photoFiles });
+    },
+    [photoFiles]
+  );
 
   const onFilesDrop = (e) => {
     e.preventDefault();
@@ -34,7 +37,9 @@ export function Upload() {
 
   const uniquify = (files) => {
     return files.filter(
-      (file, index, arr) => index === arr.findIndex((v) => (v.name === file.name) && (v.size === file.size))
+      (file, index, arr) =>
+        index ===
+        arr.findIndex((v) => v.name === file.name && v.size === file.size)
     );
   };
 
@@ -52,7 +57,17 @@ export function Upload() {
 
   const handleFiles = async (newFiles) => {
     const newFilesArr = Array.from(newFiles);
-    setPhotoFiles(uniquify([...photoFiles, ...validateFiles(newFilesArr)]));
+    const uniqueFiles = uniquify([
+      ...photoFiles,
+      ...validateFiles(newFilesArr),
+    ]);
+
+    await Promise.all(uniqueFiles.map(async (file) => {
+      if (!file.photoDataUrl) {
+        file.photoDataUrl = await readFileFromHd (file);
+    }}));
+
+    setPhotoFiles(uniqueFiles);
   };
 
   const noop = (e) => {
@@ -63,9 +78,8 @@ export function Upload() {
   const uploadPhotos = (e) => {
     // const userId = 1
     // const contestId = 1
-    readAndUploadFiles({files:photoFiles, contestId:1, userId:1});
-  }
-
+    uploadPhotos({ files: photoFiles, contestId: 1, userId: 1 });
+  };
 
   return (
     <main className="main-container">
@@ -87,9 +101,9 @@ export function Upload() {
           type="file"
           multiple
           onChange={onSelectedFilesChanged}
-        />        
+        />
       </label>
-      <button onClick={uploadPhotos} >Upload!</button>
+      <button onClick={uploadPhotos}>Upload!</button>
       <FileList validFiles={photoFiles} />
     </main>
   );

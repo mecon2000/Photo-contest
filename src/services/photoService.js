@@ -1,11 +1,12 @@
 import { httpService } from "./httpService";
 const entity = "photo";
 
-const uploadPhotos = (photos, contestId, userId) => {
+export const uploadPhotos = (photos, contestId, userId) => {
   const photosData = photos.map((photo) => ({
     contestId,
     userId,
-    photoBlob: photo.blob,
+    photoDataUrl: photo.photoDataUrl,
+    type: photo.type,
   }));
   //for json-server
   return Promise.all(
@@ -17,30 +18,15 @@ const uploadPhotos = (photos, contestId, userId) => {
    */
 };
 
-const readFilesFromHd = (files) => {
-  const promises = [];
-  [...files].forEach((file, i) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    promises.push(
-      new Promise((resolve, reject) => {
-        reader.onload = function (e) {
-          const { name, type } = file;
-          resolve({
-            name,
-            type,
-            blob: e.target.result,
-          });
-          reader.onerror = reject;
-        };
-      })
-    );
-  });
-  return Promise.all(promises);
-};
 
-export const readAndUploadFiles = async ({files, contestId, userId}) => {
-  let filesArr = await readFilesFromHd(files);
-  //console.log("blablabla", filesArr, contestId, userId);
-  return uploadPhotos(filesArr, contestId, userId);
+export const readFileFromHd = (file) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+
+  return new Promise((resolve, reject) => {
+    reader.onload = function (e) {
+      resolve(e.target.result);
+      reader.onerror = reject;
+    };
+  });
 };
