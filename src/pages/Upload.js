@@ -34,7 +34,7 @@ export function Upload() {
 
   const uniquify = (files) => {
     return files.filter(
-      (file, index, arr) => index === arr.findIndex((v) => v.name === file.name)
+      (file, index, arr) => index === arr.findIndex((v) => (v.name === file.name) && (v.size === file.size))
     );
   };
 
@@ -59,6 +59,14 @@ export function Upload() {
     e.preventDefault();
     e.stopPropagation();
   };
+
+  const uploadPhotos = (e) => {
+    // const userId = 1
+    // const contestId = 1
+    readAndUploadFiles({files:photoFiles, contestId:1, userId:1});
+  }
+
+
   return (
     <main className="main-container">
       <h1>upload your photos here</h1>
@@ -79,8 +87,9 @@ export function Upload() {
           type="file"
           multiple
           onChange={onSelectedFilesChanged}
-        />
+        />        
       </label>
+      <button onClick={uploadPhotos} >Upload!</button>
       <FileList validFiles={photoFiles} />
     </main>
   );

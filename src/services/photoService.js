@@ -39,8 +39,8 @@ const readFilesFromHd = (files) => {
   return Promise.all(promises);
 };
 
-export const readAndUploadFiles = async (files, contestId, userId) => {
+export const readAndUploadFiles = async ({files, contestId, userId}) => {
   let filesArr = await readFilesFromHd(files);
-  console.log(filesArr);
+  //console.log("blablabla", filesArr, contestId, userId);
   return uploadPhotos(filesArr, contestId, userId);
 };

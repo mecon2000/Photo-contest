@@ -11,7 +11,7 @@ export function FileList(props) {
     return (
         <div className="file-display-container">
         {
-          validFiles.map((file, i) => <FilePreview file={file} key={file.toString()}/>
+          validFiles.map((file, i) => <FilePreview file={file} key={file.name + file.size}/>
           )
         }
       </div>
