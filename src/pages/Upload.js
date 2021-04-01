@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import { FileList } from "../components/FileList";
 import { readFileFromHd } from "../services/photoService";
 
@@ -62,10 +62,13 @@ export function Upload() {
       ...validateFiles(newFilesArr),
     ]);
 
-    await Promise.all(uniqueFiles.map(async (file) => {
-      if (!file.photoDataUrl) {
-        file.photoDataUrl = await readFileFromHd (file);
-    }}));
+    await Promise.all(
+      uniqueFiles.map(async (file) => {
+        if (!file.photoDataUrl) {
+          file.photoDataUrl = await readFileFromHd(file);
+        }
+      })
+    );
 
     setPhotoFiles(uniqueFiles);
   };
@@ -79,6 +82,10 @@ export function Upload() {
     // const userId = 1
     // const contestId = 1
     uploadPhotos({ files: photoFiles, contestId: 1, userId: 1 });
+  };
+
+  const removePhoto = (filename) => {
+    setPhotoFiles(photoFiles.filter((file) => file.name !== filename));
   };
 
   return (
@@ -102,8 +109,11 @@ export function Upload() {
           onChange={onSelectedFilesChanged}
         />
       </label>
-      <FileList validFiles={photoFiles} />
+      <CallbackContext.Provider value={removePhoto}>
+        <FileList validFiles={photoFiles} />
+      </CallbackContext.Provider>
       <button onClick={uploadPhotos}>Upload!</button>
     </main>
   );
 }
+export const CallbackContext = createContext();
