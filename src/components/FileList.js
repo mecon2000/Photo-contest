@@ -9,7 +9,7 @@ export function FileList(props) {
     // let validFiles = [{invalid:false,name:'baba',size:1024}]
 
     return (
-        <div className="file-display-container">
+        <div className="file-list">
         {
           validFiles.map((file, i) => <FilePreview file={file} key={file.name + file.size}/>
           )

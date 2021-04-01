@@ -1,4 +1,7 @@
+@import './pages/Upload';
+@import './components/FilePreview';
+@import './components/FileList';
+
 *,*::before,*::after{box-sizing: border-box;}
 
-.main-container{display: flex; justify-content: space-around;align-items: center; flex-flow: column;
-min-height: 100vh;}
+

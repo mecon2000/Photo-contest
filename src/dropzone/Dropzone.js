@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import axios from 'axios';
 
-import './Dropzone.css';
+// import './Dropzone.css';
 
 const Dropzone = () => {
     const fileInputRef = useRef();

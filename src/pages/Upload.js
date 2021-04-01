@@ -83,8 +83,7 @@ export function Upload() {
 
   return (
     <main className="main-container">
-      <h1>upload your photos here</h1>
-      <h1>NEW COMPONENT GOOODDDD!!!!!</h1>
+      <h1>Upload your photos here</h1>
       <label
         className="drop-container"
         onDragOver={noop}
@@ -103,8 +102,8 @@ export function Upload() {
           onChange={onSelectedFilesChanged}
         />
       </label>
-      <button onClick={uploadPhotos}>Upload!</button>
       <FileList validFiles={photoFiles} />
+      <button onClick={uploadPhotos}>Upload!</button>
     </main>
   );
 }
