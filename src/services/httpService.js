@@ -30,7 +30,7 @@ async function ajax(endpoint, method, data) {
     return res.data;
   } catch (err) {
     console.error(
-      `Having hard times at trying to ${method.toLowerCase()} some data... mabye ${endpoint} found your payload offensive, have a look:${data}`
+      `Having hard times at trying to ${method.toLowerCase()} some data... mabye ${endpoint} found your payload offensive, have a look:`, data, err
     );
     throw err;
   }

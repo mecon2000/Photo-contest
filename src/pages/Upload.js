@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext } from "react";
 import { FileList } from "../components/FileList";
-import { readFileFromHd } from "../services/photoService";
+import { readFileFromHd, uploadPhotos } from "../services/photoService";
 
 export function Upload() {
   const [photoFiles, setPhotoFiles] = useState([]);
@@ -78,10 +78,17 @@ export function Upload() {
     e.stopPropagation();
   };
 
-  const uploadPhotos = (e) => {
+  const uploadAllPhotos = (e) => {
     // const userId = 1
     // const contestId = 1
-    uploadPhotos({ files: photoFiles, contestId: 1, userId: 1 });
+    uploadPhotos({ photos: photoFiles, contestId: 1, userId: 1 })
+    .then(()=>alert('sweet'))
+    .catch(err=>{
+      console.error(err);
+      alert('something went wrong :(')
+    });
+    
+    //TODO: show a nicer "successful upload" toast
   };
 
   const removePhoto = (filename) => {
@@ -112,7 +119,7 @@ export function Upload() {
       <CallbackContext.Provider value={removePhoto}>
         <FileList validFiles={photoFiles} />
       </CallbackContext.Provider>
-      <button onClick={uploadPhotos}>Upload!</button>
+      <button onClick={uploadAllPhotos}>Upload!</button>
     </main>
   );
 }

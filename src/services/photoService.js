@@ -1,7 +1,7 @@
 import { httpService } from "./httpService";
 const entity = "photo";
 
-export const uploadPhotos = (photos, contestId, userId) => {
+export const uploadPhotos = ({photos, contestId, userId}) => {
   const photosData = photos.map((photo) => ({
     contestId,
     userId,
