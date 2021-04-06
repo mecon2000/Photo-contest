@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createContext } from "react";
 import { FileList } from "../components/FileList";
+import { PhotoDetails } from "../components/PhotoDetails";
 import { readFileFromHd, uploadPhotos } from "../services/photoService";
 
 export function Upload() {
@@ -10,7 +11,7 @@ export function Upload() {
     },
     [photoFiles]
   );
-
+  const [photoDetailsSrc, setPhotoDetailsSrc] = useState(null);
   const onFilesDrop = (e) => {
     e.preventDefault();
 
@@ -82,17 +83,21 @@ export function Upload() {
     // const userId = 1
     // const contestId = 1
     uploadPhotos({ photos: photoFiles, contestId: 1, userId: 1 })
-    .then(()=>alert('sweet'))
-    .catch(err=>{
-      console.error(err);
-      alert('something went wrong :(')
-    });
-    
+      .then(() => alert("sweet"))
+      .catch((err) => {
+        console.error(err);
+        alert("something went wrong :(");
+      });
+
     //TODO: show a nicer "successful upload" toast
   };
 
   const removePhoto = (filename) => {
     setPhotoFiles(photoFiles.filter((file) => file.name !== filename));
+  };
+
+  const openPhoto = (src) => {
+    setPhotoDetailsSrc(src);
   };
 
   return (
@@ -116,10 +121,11 @@ export function Upload() {
           onChange={onSelectedFilesChanged}
         />
       </label>
-      <CallbackContext.Provider value={removePhoto}>
+      <CallbackContext.Provider value={{ removePhoto, openPhoto }}>
         <FileList validFiles={photoFiles} />
       </CallbackContext.Provider>
       <button onClick={uploadAllPhotos}>Upload!</button>
+      {photoDetailsSrc && <PhotoDetails src={photoDetailsSrc} />}
     </main>
   );
 }
