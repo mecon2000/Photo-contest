@@ -2,8 +2,9 @@ import React, { useEffect, useState, createContext } from "react";
 import { FileList } from "../components/FileList";
 import { PhotoDetails } from "../components/PhotoDetails";
 import { readFileFromHd, uploadPhotos } from "../services/photoService";
+import { capitalizeFirstLetter } from "../services/utilService";
 
-export function Upload() {
+export function Upload(props) {
   const [photoFiles, setPhotoFiles] = useState([]);
   useEffect(
     (prev) => {
@@ -99,10 +100,14 @@ export function Upload() {
   const openPhoto = (src) => {
     setPhotoDetailsSrc(src);
   };
+  
+  const username = props.match?.params?.user || "";
+  const title = capitalizeFirstLetter( `${username&&username+", "}upload your photos here: `);
+
 
   return (
     <main className="main-container">
-      <h1>Upload your photos here</h1>
+      <h1>{title}</h1>
       <label
         className="drop-container"
         onDragOver={noop}

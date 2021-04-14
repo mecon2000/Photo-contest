@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { Upload } from "./pages/Upload";
 import { Vote } from "./pages/Vote";
-import { ChooseContest } from "./pages/ChooseContest";
+import { Contests } from "./pages/Contests";
 import { ShowWinners } from "./pages/ShowWinners";
 import Dropzone from "./dropzone/Dropzone";
 import "./App.css";
@@ -12,34 +12,13 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/choosecontest">
-          <ChooseContest />
-        </Route>
-
-        <Route exact path="/upload">
-          <Upload />
-        </Route>
-
-        <Route exact path="/">
-          <Upload />
-        </Route>
-
-        <Route exact path="/vote">
-          <Vote />
-        </Route>
-
-        <Route exact path="/showwinners">
-          <ShowWinners />
-        </Route>
-
-        <Route path="/Old-dropzone">
-          <div>
-            <p className="title">React Drag and Drop Image Upload</p>
-            <div className="content">
-              <Dropzone />
-            </div>
-          </div>
-        </Route>
+        <Route exact path="/:user/upload" component={Upload} />
+        <Route exact path="/upload" component={Upload} />
+        <Route exact path="/contests" component={Contests} />
+        <Route exact path="/vote" component={Vote} />
+        <Route exact path="/showwinners" component={ShowWinners} />
+        <Route exact path="/Old-dropzone" component={Dropzone} />
+        <Route path="/" component={Upload} />
       </Switch>
     </Router>
   );
