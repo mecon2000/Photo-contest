@@ -1,13 +1,12 @@
 import React from "react";
 
 export function PhotoDetails(props) {
-  const { src } = props;
+  const { src,closePhoto} = props;
 
-  const onClose = () => {};
   return (
-    <>
-      <img className="photo-details" src={src} alt="alt text" />
-      <button onClick={onClose}>X</button>
-    </>
+    <div className="photo-details" onClick={props.onClick}>
+      <img src={src} alt="alt text" />
+      <button className="close-button" onClick={closePhoto}>X</button>
+    </div>
   );
 }

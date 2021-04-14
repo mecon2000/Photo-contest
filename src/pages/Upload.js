@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createContext } from "react";
 import { FileList } from "../components/FileList";
+import { ModalScreen } from "../components/ModalScreen";
 import { PhotoDetails } from "../components/PhotoDetails";
 import { readFileFromHd, uploadPhotos } from "../services/photoService";
 import { capitalizeFirstLetter } from "../services/utilService";
@@ -97,13 +98,12 @@ export function Upload(props) {
     setPhotoFiles(photoFiles.filter((file) => file.name !== filename));
   };
 
-  const openPhoto = (src) => {
-    setPhotoDetailsSrc(src);
-  };
-  
+  const openPhoto = (src) => setPhotoDetailsSrc(src);
+  const closePhoto = () => setPhotoDetailsSrc(null);
   const username = props.match?.params?.user || "";
-  const title = capitalizeFirstLetter( `${username&&username+", "}upload your photos here: `);
-
+  const title = capitalizeFirstLetter(
+    `${username && username + ", "}upload your photos here: `
+  );
 
   return (
     <main className="main-container">
@@ -130,7 +130,12 @@ export function Upload(props) {
         <FileList validFiles={photoFiles} />
       </CallbackContext.Provider>
       <button onClick={uploadAllPhotos}>Upload!</button>
-      {photoDetailsSrc && <PhotoDetails src={photoDetailsSrc} />}
+
+      {photoDetailsSrc && (
+        <ModalScreen onClick={closePhoto}>
+          <PhotoDetails onClick={(ev)=>ev.stopPropagation()} closePhoto={closePhoto} src={photoDetailsSrc} />
+        </ModalScreen>
+      )}
     </main>
   );
 }

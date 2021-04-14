@@ -1,3 +1,16 @@
-.photo-details{
-    height: 100%;
+.photo-details {
+    position: relative;
+    background-color: #369e;
+    flex-basis: 0;
+    
+  & img {
+    height: 96%;
+    vertical-align: middle;
+  }
+  & .close-button {
+    background-color: lawngreen;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+  }
 }
