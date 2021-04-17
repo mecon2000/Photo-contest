@@ -16,7 +16,7 @@ export function Vote() {
 
   return (
     <>
-      <h2>Vote!</h2>
+      <h1>Vote!</h1>
       <div className="masonry-with-columns">
         {photos.map((p, i) => {
           return <img src={p.photoDataUrl} alt={i} key={"photo" + i} />;
