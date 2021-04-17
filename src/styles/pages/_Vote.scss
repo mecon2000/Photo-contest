@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 1rem;
+  justify-content: center;
+  background-color: rgb(161, 160, 160);
+}
+
+.masonry-with-columns {
+  columns: 3 100px;
+  column-gap: 3rem;  
+  img {
+    border: 3px solid rgb(66, 66, 66);
+    width: 33vh;
+  }
+}
