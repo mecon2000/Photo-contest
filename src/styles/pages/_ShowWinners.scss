@@ -1,0 +1,23 @@
+.show-winners {
+  .winners {
+    display: flex;
+    align-items: flex-end;
+    font-size:xx-large;
+    [class*="-place"] {
+      display: flex;
+      padding-top: 1rem;
+      justify-content: center;
+      border: 1px solid orange;
+      width: 15vw;
+    }
+    .first-place {
+        height: 300px;
+    }
+    .second-place {
+        height: 225px;
+    }
+    .third-place {
+        height: 150px;
+    }
+  }
+}

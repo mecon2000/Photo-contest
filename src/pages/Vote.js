@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, {useState, useEffect } from "react";
 import { SmallPhoto } from "../components/SmallPhoto";
 import { downloadAllPhotos } from "../services/photoService";
 
