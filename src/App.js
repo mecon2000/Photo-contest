@@ -1,20 +1,26 @@
 import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import "./App.css";
-import Dropzone from "./dropzone/Dropzone";
 import { Upload } from "./pages/Upload";
+import { Vote } from "./pages/Vote";
+import { Contests } from "./pages/Contests";
+import { ShowWinners } from "./pages/ShowWinners";
+import Dropzone from "./dropzone/Dropzone";
+import "./App.css";
 
 function App() {
-  return true ? (
-    <Upload />
-  ) : (
-    <div>
-      <p className="title">React Drag and Drop Image Upload</p>
-      <div className="content">
-        <Dropzone />
-      </div>
-    </div>
+  return (
+    <Router>
+      <Switch>
+        <Route exact path="/:user/upload" component={Upload} />
+        <Route exact path="/upload" component={Upload} />
+        <Route exact path="/contests" component={Contests} />
+        <Route exact path="/vote" component={Vote} />
+        <Route exact path="/showwinners" component={ShowWinners} />
+        <Route exact path="/old-dropzone" component={Dropzone} />
+        <Route path="/" component={Vote} />
+      </Switch>
+    </Router>
   );
 }
-
 export default App;

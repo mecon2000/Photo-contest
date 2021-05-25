@@ -1,0 +1,20 @@
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+  min-height: 100vh;
+  [type="file"] {
+    display: none;
+  }
+
+.drop-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    width: 800px;
+    height: 200px;
+    border: 4px dashed #4aa1f3;
+  }
+}

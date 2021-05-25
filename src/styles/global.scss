@@ -1,0 +1,10 @@
+@import './pages/Upload';
+@import './pages/Vote';
+@import './components/FilePreview';
+@import './components/FileList';
+@import './components/PhotoDetails';
+@import './components/ModalScreen';
+@import './components/SmallPhoto';
+
+*,*::before,*::after{box-sizing: border-box;}
+body{margin: 0;padding: 0;}

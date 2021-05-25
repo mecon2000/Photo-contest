@@ -1,0 +1,19 @@
+body {
+  margin: 0;
+  padding: 1rem;
+  justify-content: center;
+  background-color: rgb(99, 156, 107);
+}
+
+h1 {
+    text-align: center
+}
+
+.masonry-with-columns {
+  columns: 3 100px;
+  column-gap: 3rem;  
+  img {
+    border: 3px solid rgb(66, 66, 66);
+    width: 33vh;
+  }
+}

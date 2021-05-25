@@ -1,0 +1,31 @@
+.file-preview {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  margin-bottom: 1em;  
+  .file-name {
+    margin-inline-start: 1em;
+    display: inline-block;
+    vertical-align: top;
+    color: #4aa1f3;
+  }
+
+  .file-size {
+    display: inline-block;
+    vertical-align: top;
+    margin-inline-start: 1em;
+    color: #444242;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .file-remove {
+    margin-inline-start: 1em;
+    cursor: pointer;
+    color: red;
+  }
+  .thumbnail {
+    height: 100%;
+  }
+}
