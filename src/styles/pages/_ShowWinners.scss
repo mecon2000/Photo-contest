@@ -2,22 +2,37 @@
   .winners {
     display: flex;
     align-items: flex-end;
-    font-size:xx-large;
+    font-size: xx-large;
+    gap: 0.25rem;
     [class*="-place"] {
       display: flex;
-      padding-top: 1rem;
-      justify-content: center;
-      border: 1px solid orange;
-      width: 15vw;
+      flex-direction: column;
+      align-items: center;
+      // border: 1px solid orangered;
+
+      .stand {
+        display: flex;
+        padding-top: 1rem;
+        margin-top: .5rem;
+        justify-content: center;
+        // border: 1px solid orange;
+        background-color: whitesmoke;
+        color: darkblue;
+        width: 15vw;
+      }
     }
-    .first-place {
-        height: 300px;
+    .winning-photo {
+      width: 14vw;
+      // border: 1px solid black;
     }
-    .second-place {
-        height: 225px;
+    .first-place .stand {
+      height: 300px;
     }
-    .third-place {
-        height: 150px;
+    .second-place .stand {
+      height: 225px;
+    }
+    .third-place .stand {
+      height: 150px;
     }
   }
 }
