@@ -25,7 +25,7 @@ const getPhotoData = (photoId) => {
 
 const updatePhotoWithNewScore = ({ photoData, voterId, newScore }) => {
   if (!photoData.scores) {
-    photoData.scrores = [];
+    photoData.scores = [];
   }
 
   let scoreOfThisVoter = photoData.scores.find((p) => {
@@ -43,17 +43,31 @@ const setPhotoData = (photoId, photoData) => {
 };
 
 export const updatePhotoScore = async ({ photoId, voterId, newScore }) => {
+  //TODO: when we'll have a server, we won't need to getPhotoData just setPhotoData, 
+  //and let the server add new score to the existing ones 
+  
   let photoData = await getPhotoData(photoId);
   updatePhotoWithNewScore({ photoData, voterId, newScore });
   setPhotoData(photoId, photoData);
 };
 
-export const downloadAllPhotosWithScores = async ({ contestId, userId }) => {
+export const downloadAllPhotosWithScores = async ({ contestId, voterId }) => {
   //for json-server
   const entity = `photo?contestId=${contestId}`;
+  //TODO: when we'll have a server, the resulting call should bring back array of objects with photo data
+  //and ONLY the scores of this (else it'll be easy to fake the scores of other users)
   const photosData = await httpService.get(entity);
-  //TODO: get scores by current userId, for each photo. do it in one call!
-  return photosData; //should contain the known scores by this user for that contest
+
+
+
+  photosData.map((p) => {
+    const scoreOfVoter = p.scores?.find((s) => s.voterId === voterId);
+    p.score = scoreOfVoter?.score;
+    delete p.scores;
+    return p;
+  });
+
+  return photosData;
 };
 
 export const readFileFromHd = (file) => {
