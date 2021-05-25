@@ -1,3 +1,4 @@
+import React from "react";
 //should show 1 small photo with 5 stars (to rate)
 export function SmallPhoto(props) {
   const { src, setScore, score, id, shouldShowScore = true } = props;

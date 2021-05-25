@@ -1,5 +1,6 @@
 @import './pages/Upload';
 @import './pages/Vote';
+@import './pages/ShowWinners';
 @import './components/FilePreview';
 @import './components/FileList';
 @import './components/PhotoDetails';
@@ -7,4 +8,4 @@
 @import './components/SmallPhoto';
 
 *,*::before,*::after{box-sizing: border-box;}
-body{margin: 0;padding: 0;}
+
