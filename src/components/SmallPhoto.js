@@ -1,7 +1,7 @@
 import React from "react";
 //should show 1 small photo with 5 stars (to rate)
 export function SmallPhoto(props) {
-  const { src, setScore, score, key } = props;
+  const { src, setScore, score, id } = props;
 
   return (
     <div className="small-photo">
@@ -10,8 +10,8 @@ export function SmallPhoto(props) {
         {[...Array(5).keys()].map((i) => {
           return (
             <button
-              className={"score-button" + (i === score ? "-selected" : "")}
-              key = {key+i}
+              className={"score-button" + (i+1 === score ? "-selected" : "")}
+              key = {id+i}
               onClick={(e) => {
                 setScore(i + 1);
               }}

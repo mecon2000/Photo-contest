@@ -18,7 +18,7 @@ function App() {
         <Route exact path="/vote" component={Vote} />
         <Route exact path="/showwinners" component={ShowWinners} />
         <Route exact path="/old-dropzone" component={Dropzone} />
-        <Route path="/" component={Upload} />
+        <Route path="/" component={Vote} />
       </Switch>
     </Router>
   );

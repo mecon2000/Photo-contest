@@ -1,34 +1,47 @@
 import React, {useState, useEffect } from "react";
 import { SmallPhoto } from "../components/SmallPhoto";
-import { downloadAllPhotos } from "../services/photoService";
+import {
+  downloadAllPhotosWithScores,
+  updatePhotoScore,
+} from "../services/photoService";
 
 export function Vote() {
-  const userId = 1;
+  const voterId = 1;
   const contestId = 1;
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
     const getAllPhotos = async () => {
-      const photosData = await downloadAllPhotos({ contestId, userId });
+      const photosData = await downloadAllPhotosWithScores({
+        contestId,
+        voterId,
+      });
       setPhotos(photosData);
     };
     getAllPhotos();
   }, []);
 
-  const updateScore = (index, score) => {};
+  const updateScore = (photoId, newScore) => {
+    const voterId = 1;
+    updatePhotoScore({ photoId, voterId, newScore });
+    photos.find((p) => p.id === photoId).score = newScore;
+    setPhotos([...photos]);
+  };
 
   return (
     <>
       <h1>Vote!</h1>
       <div className="masonry-with-columns">
         {photos.map((p, i) => {
-          // return <img src={p.photoDataUrl} alt={i} key={"photo" + i} />;
+          
           return (
             <SmallPhoto
               src={p.photoDataUrl}
               alt={i}
-              key={"photo" + i}
-              updateScore={(score) => updateScore(i, score)}
+              key={p.id}
+              id={p.id}
+              score={p.score}
+              setScore={(newScore) => updateScore(p.id, newScore)}
             />
           );
         })}
