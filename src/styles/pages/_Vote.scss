@@ -11,9 +11,5 @@ h1 {
 
 .masonry-with-columns {
   columns: 3 100px;
-  column-gap: 3rem;  
-  img {
-    border: 3px solid rgb(66, 66, 66);
-    width: 33vh;
-  }
+  column-gap: 3vw;  
 }
