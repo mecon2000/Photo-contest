@@ -1,12 +1,8 @@
-an application to hold a photo contest:
+an application to hold photo contests.
+It has several pages:
+1.  Upload photos to a specific contest
+2.  Vote on photos in a specific contest
+3.  Show the winner
 
 
-
-----------------------------------------------------------------
-OLD READ ME:  
-
-The component allows for image upload with drag-and-drop functionality. The component can be extended to allow other file types like pdf, zip etc. The file storage service used is [IMGBB](https://imgbb.com/). Create an account and then obtain an API key from [https://api.imgbb.com/](https://api.imgbb.com/).
-
-Here is the result
-
-![Alt Text](https://dev-to-uploads.s3.amazonaws.com/i/637rognbgjul9xk2y1hm.gif)
+Later, will add login page to differentiate different users and prohibit cheating by multiple voting by 1 person
