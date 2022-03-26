@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.21.1",
     "bytes": "^3.1.0",
+    "express": "^4.17.3",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
@@ -20,8 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "json-server --routes ./routes.json --watch src/mock_db.json --port 4000",
-    "code-server": "npx json-server -r ./routes.json -H code-server -w src/mock_db.json -p 4000"
+    "server": "node ./server/server-main.js"
   },
   "eslintConfig": {
     "extends": "react-app"
