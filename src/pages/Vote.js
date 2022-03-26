@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { SmallPhoto } from "../components/SmallPhoto";
 import {
   downloadAllPhotosWithScores,
@@ -33,7 +33,6 @@ export function Vote() {
       <h1>Vote!</h1>
       <div className="masonry-with-columns">
         {photos.map((p, i) => {
-          
           return (
             <SmallPhoto
               src={p.photoDataUrl}

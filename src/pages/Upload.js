@@ -85,7 +85,7 @@ export function Upload(props) {
     // const userId = 1
     // const contestId = 1
     uploadPhotos({ photos: photoFiles, contestId: 1, userId: 1 })
-      .then(() => alert("sweet"))
+      .then(() => alert("photos uploaded!"))
       .catch((err) => {
         console.error(err);
         alert("something went wrong :(");
@@ -133,7 +133,11 @@ export function Upload(props) {
 
       {photoDetailsSrc && (
         <ModalScreen onClick={closePhoto}>
-          <PhotoDetails onClick={(ev)=>ev.stopPropagation()} closePhoto={closePhoto} src={photoDetailsSrc} />
+          <PhotoDetails
+            onClick={(ev) => ev.stopPropagation()}
+            closePhoto={closePhoto}
+            src={photoDetailsSrc}
+          />
         </ModalScreen>
       )}
     </main>
