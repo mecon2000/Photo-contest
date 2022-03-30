@@ -1,4 +1,5 @@
 var express = require("express");
+const { mongo } = require("../models/dbHandler");
 var router = express.Router();
 
 //Middle ware that is specific to this router
@@ -10,11 +11,18 @@ router.use((req, res, next) => {
   next();
 });
 
+const usingDbExample = async () => {
+  const databasesList = await mongo.db().admin().listDatabases();
+  console.log("Databases:");
+  databasesList.databases.forEach((db) => console.log(` - ${db.name}`));
+}
+
 //   POST /v1/contest (body will contain: userId, name (of contest))
 //   will create a new contest and put it in state of "uploading".
 //   return error if userId is not admin
 //   return error if Name already exists
-router.post("/v1/contest", (req, res) => {
+router.post("/v1/contest", async (req, res) => {
+  await usingDbExample();
   res.send("POST contest");
 });
 
