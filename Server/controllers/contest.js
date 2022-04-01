@@ -1,15 +1,11 @@
-let { stringify } = require("../utils/stringHelpers");
-var express = require("express");
-var bodyParser = require("body-parser");
-var jsonParser = bodyParser.json();
+const { stringify } = require("../utils/stringHelpers");
+const { ContestStates, isContestStateValid } = require("../utils/enums");
+const express = require("express");
+const bodyParser = require("body-parser");
+const jsonParser = bodyParser.json();
 const { mongo } = require("../models/dbHandler");
-var router = express.Router();
-
-const ContestStates = Object.freeze({
-  UPLOADING: "uploading",
-  VOTING: "voting",
-  SHOW_WINNERS: "showWinners",
-});
+const { ObjectId } = require("mongodb");
+const router = express.Router();
 
 ///////// helper utils that should be moved to their own file //////////////
 const isUserAdmin = (userId) => {
@@ -17,11 +13,18 @@ const isUserAdmin = (userId) => {
   return true;
 };
 
-const isContestExists = (contestName) => {
+const isContestNameExists = (contestName) => {
   console.log(
-    `mock checking if contest "${contestName}" already exists in the DB`
+    `mock checking if contest ${contestName} already exists in the DB`
   );
   return false;
+};
+
+const isContestIdExists = (contestId) => {
+  console.log(
+    `mock checking if contest "${stringify(contestId)}" exists in the DB`
+  );
+  return true;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,24 +63,72 @@ router.post("/v1/contest", jsonParser, async (req, res) => {
     return;
   }
 
-  if (isContestExists(contestName)) {
+  if (isContestNameExists(contestName)) {
     res.status(400).send({ error: "Contest name already exists" });
     return;
   }
 
   let newContest = { name: contestName, state: ContestStates.UPLOADING };
   const result = await mongo.db().collection("contests").insertOne(newContest);
-  console.log(`res = ${JSON.stringify(result)}`);
+
+  if (!result.acknowledged) {
+    res.status(500).send({ error: "adding a contest failed!" });
+    console.log(
+      `adding a contest failed, object returned from db: ${stringify(result)}`
+    );
+    return;
+  }
+
   res.send("POST /v1/contest is successful");
 });
 
-//   PUT /v1/contest (body will contain: userId, contestId, new state)
+//   PUT /v1/contest (body will contain: userId, contestId, newState)
 //   updates the state of a contest
 //   return error if userId is not admin
 //   return error if contestId doesn't exist
-//   return error if state is same as new state
-router.put("/v1/contest", (req, res) => {
-  res.send("PUT contest");
+router.put("/v1/contest", jsonParser, async (req, res) => {
+  const userId = req?.body?.userId;
+  const contestId = req?.body?.contestId;
+  const newState = req?.body?.newState;
+
+  if (!userId || !contestId || !newState) {
+    res.status(400).send({ error: "Missing parameters" });
+    console.log(`req.body = ${stringify(req.body)}`);
+    return;
+  }
+
+  if (!isUserAdmin(userId)) {
+    res.status(401).send({ error: "User is not admin!" });
+    return;
+  }
+
+  if (!isContestStateValid(newState)) {
+    res.status(400).send({ error: "Contest state isn't valid" });
+    return;
+  }
+
+  if (!isContestIdExists(contestId)) {
+    res.status(400).send({ error: "Contest Id doesn't exist" });
+    return;
+  }
+
+  const query = { _id: ObjectId(contestId) };
+  const result = await mongo
+    .db()
+    .collection("contests")
+    .updateOne(query, { $set: { state: newState } });
+
+  if (result.modifiedCount != 1) {
+    res.status(500).send({ error: "update failed!" });
+    console.log(
+      `updating status of a contest failed, object returned from db: ${stringify(
+        result
+      )}`
+    );
+    return;
+  }
+
+  res.send("PUT /v1/contest is successful");
 });
 
 module.exports = router;
