@@ -1,6 +1,6 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
-const { mongo, connectToDb } = require("./models/dbHandler");
+const { connectToDb } = require("./models/dbHandler");
 const app = express();
 const port = 4000;
 
