@@ -83,4 +83,25 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
   }
 });
 
+//   GET /v1/contest (body will contain: userId)
+//   returns a list of contests
+//   return error if userId is not admin
+router.get("/v1/contest", jsonParser, async (req, res) => {
+  try {
+    const userId = req?.body?.userId;
+
+    throwIfValidationFailed(userId, 400, "missing Parameters");
+    throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
+    
+    const contests = await mongo.db().collection("contests").find({}).toArray();
+
+    res.send(contests);
+  } catch (e) {
+    console.log("error is ", e)
+    if (e instanceof ValidationException) {
+      res.status(e.errCode).send(e.errMessage);
+    } else res.status(500).send("failed for unknown reason");
+  }
+});
+
 module.exports = router;
