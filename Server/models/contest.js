@@ -10,6 +10,15 @@ const addNewContest = async (contestName) => {
   return result.acknowledged;
 };
 
+const getContestState = async (contestId) => {
+  const query = { _id: ObjectId(contestId) };
+  const result = await mongo
+    .db()
+    .collection("contests")
+    .findOne(query);  
+  return result?.state;
+};
+
 const updateContestState = async (contestId, newState) => {
   const query = { _id: ObjectId(contestId) };
   const result = await mongo
@@ -35,4 +44,4 @@ const isContestIdExists = async (contestId) => {
   return true;
 };
 
-module.exports = { addNewContest, updateContestState, getAllContests, isContestNameExists, isContestIdExists };
+module.exports = { addNewContest, getContestState, updateContestState, getAllContests, isContestNameExists, isContestIdExists };

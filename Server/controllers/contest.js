@@ -53,7 +53,7 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
     throwIfValidationFailed(isContestStateValid(newState), 400, "Contest state isn't valid");
     throwIfValidationFailed(isContestIdExists(contestId), 400, "Contest Id doesn't exist");
 
-    const hasSucceeded = updateContestState(contestId, newState);
+    const hasSucceeded = await updateContestState(contestId, newState);
 
     throwIfValidationFailed(hasSucceeded, 500, "update failed!");
 
