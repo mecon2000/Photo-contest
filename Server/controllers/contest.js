@@ -1,30 +1,17 @@
-const { stringify } = require("../utils/stringHelpers");
 const { ValidationException, throwIfValidationFailed } = require("../utils/validationsHelper");
 const { ContestStates, isContestStateValid } = require("../utils/enums");
+const {
+  addNewContest,
+  updateContestState,
+  getAllContests,
+  isContestNameExists,
+  isContestIdExists,
+} = require("../models/contest");
+const { isUserAdmin } = require("../models/user");
 const express = require("express");
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
-const { mongo } = require("../models/dbHandler");
-const { ObjectId } = require("mongodb");
 const router = express.Router();
-
-///////// helper utils that should be moved to their own file //////////////
-const isUserAdmin = (userId) => {
-  console.log(`mock checking if user ${userId} is admin`);
-  return true;
-};
-
-const isContestNameExists = (contestName) => {
-  console.log(`mock checking if contest ${contestName} already exists in the DB`);
-  return false;
-};
-
-const isContestIdExists = (contestId) => {
-  console.log(`mock checking if contest "${stringify(contestId)}" exists in the DB`);
-  return true;
-};
-
-/////////////////////////////////////////////////////////////////////////////
 
 //   POST /v1/contest (body must contain: userId, name (of contest))
 //   will create a new contest and put it in state of "uploading".
@@ -39,10 +26,9 @@ router.post("/v1/contest", jsonParser, async (req, res) => {
     throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
     throwIfValidationFailed(!isContestNameExists(contestName), 400, "Contest name already exists");
 
-    let newContest = { name: contestName, state: ContestStates.UPLOADING };
-    const result = await mongo.db().collection("contests").insertOne(newContest);
+    const hasSucceeded = await addNewContest(contestName);
 
-    throwIfValidationFailed(result.acknowledged, 500, "adding a contest failed!");
+    throwIfValidationFailed(hasSucceeded, 500, "adding a contest failed!");
 
     res.send("POST /v1/contest is successful");
   } catch (e) {
@@ -67,13 +53,9 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
     throwIfValidationFailed(isContestStateValid(newState), 400, "Contest state isn't valid");
     throwIfValidationFailed(isContestIdExists(contestId), 400, "Contest Id doesn't exist");
 
-    const query = { _id: ObjectId(contestId) };
-    const result = await mongo
-      .db()
-      .collection("contests")
-      .updateOne(query, { $set: { state: newState } });
+    const hasSucceeded = updateContestState(contestId, newState);
 
-    throwIfValidationFailed(result.modifiedCount == 1, 500, "update failed!");
+    throwIfValidationFailed(hasSucceeded, 500, "update failed!");
 
     res.send("PUT /v1/contest is successful");
   } catch (e) {
@@ -92,12 +74,11 @@ router.get("/v1/contest", jsonParser, async (req, res) => {
 
     throwIfValidationFailed(userId, 400, "missing Parameters");
     throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
-    
-    const contests = await mongo.db().collection("contests").find({}).toArray();
+
+    const contests = await getAllContests();
 
     res.send(contests);
   } catch (e) {
-    console.log("error is ", e)
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
     } else res.status(500).send("failed for unknown reason");
