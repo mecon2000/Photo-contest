@@ -1,4 +1,4 @@
-const ValidationException = (errCode, errMessage) => {
+function ValidationException (errCode, errMessage) {
   this.errCode = errCode;
   this.errMessage = errMessage;
 };
