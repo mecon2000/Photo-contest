@@ -3,34 +3,30 @@ const { ObjectId } = require("mongodb");
 const { ContestStates } = require("../utils/enums");
 const { stringify } = require("../utils/stringHelpers");
 
+const contestsDBCollection = mongo.db().collection("contests");
+
 const addNewContest = async (contestName) => {
   let newContest = { name: contestName, state: ContestStates.UPLOADING };
-  const result = await mongo.db().collection("contests").insertOne(newContest);
+  const result = await contestsDBCollection.insertOne(newContest);
 
   return result.acknowledged;
 };
 
 const getContestState = async (contestId) => {
   const query = { _id: ObjectId(contestId) };
-  const result = await mongo
-    .db()
-    .collection("contests")
-    .findOne(query);  
+  const result = await contestsDBCollection.findOne(query);
   return result?.state;
 };
 
 const updateContestState = async (contestId, newState) => {
   const query = { _id: ObjectId(contestId) };
-  const result = await mongo
-    .db()
-    .collection("contests")
-    .updateOne(query, { $set: { state: newState } });
+  const result = await contestsDBCollection.updateOne(query, { $set: { state: newState } });
 
   return result.modifiedCount == 1;
 };
 
 const getAllContests = async () => {
-  const contests = await mongo.db().collection("contests").find({}).toArray();
+  const contests = await contestsDBCollection.find({}).toArray();
   return contests;
 };
 
@@ -44,4 +40,11 @@ const isContestIdExists = async (contestId) => {
   return true;
 };
 
-module.exports = { addNewContest, getContestState, updateContestState, getAllContests, isContestNameExists, isContestIdExists };
+module.exports = {
+  addNewContest,
+  getContestState,
+  updateContestState,
+  getAllContests,
+  isContestNameExists,
+  isContestIdExists,
+};

@@ -1,9 +1,11 @@
 const { mongo } = require("../models/dbHandler");
 const { ObjectId } = require("mongodb");
 
+const photosDBCollection = mongo.db().collection("photos")
+
 const addNewPhoto = async (userId, contestId, photoDataBolb, fileType) => {
   let newPhoto = { userId, contestId, photoDataBolb, fileType, scoresSum: 0, howManyVoted: 0 };
-  const result = await mongo.db().collection("photos").insertOne(newPhoto);
+  const result = await photosDBCollection.insertOne(newPhoto);
 
   return result.acknowledged;
 };
@@ -29,7 +31,7 @@ const getPhotosData = async (photoIdArray) => {
       return { _id: ObjectId(p) };
     }),
   };
-  const result = await mongo.db().collection("photos").find(query).toArray();
+  const result = await photosDBCollection.find(query).toArray();
   return result;
 };
 
@@ -43,13 +45,13 @@ const updatePhotosData = async (photoDataArray) => {
     };
   });
 
-  const result = await mongo.db().collection("photos").bulkWrite(queriesArray);
+  const result = await photosDBCollection.bulkWrite(queriesArray);
   return result.ok === 1;
 };
 
 const getPhotosForContest = async (contestId) => {
   const query = { contestId };
-  const result = await mongo.db().collection("photos").find(query).toArray();
+  const result = await photosDBCollection.find(query).toArray();
   return result;
 };
 
