@@ -1,28 +1,84 @@
-var express = require("express");
+const express = require("express");
+const { ValidationException, throwIfValidationFailed } = require("../utils/validationsHelper");
+const { ContestStates } = require("../utils/enums");
+const {
+  addNewPhoto,
+  get3PhotosWithHighestScore,
+  getPhotosData,
+  updatePhotosData,
+  getPhotosForContest,
+} = require("../models/photo");
+const { getContestState } = require("../models/contest");
+const bodyParser = require("body-parser");
+const { stringify } = require("../utils/stringHelpers");
+const jsonParser = bodyParser.json();
 var router = express.Router();
-
-//Middle ware that is specific to this router
-router.use((req, res, next) => {
-  console.log(`Photos api: ${req.originalUrl}`);
-  if (req.body) {
-    console.log(`\tBody=${JSON.stringify(req.body)}`);
-  }
-  next();
-});
 
 //   POST /v1/photo (body will contain: contestId, userId, photoDataBolb, fileType)
 //   it will write a new photo entity  (with scoresSum=0,howManyVoted=0)
 //   return error if contest is not in state of "uploading"
-router.post("/v1/photo", (req, res) => {
-  res.send("POST photo");
+router.post("/v1/photo", jsonParser, async (req, res) => {
+  try {
+    const { userId, contestId, photoDataBolb, fileType } = req?.body;
+
+    throwIfValidationFailed(userId && contestId && photoDataBolb && fileType, 400, "missing Parameters");
+    throwIfValidationFailed(
+      (await getContestState(contestId)) == ContestStates.UPLOADING,
+      400,
+      "Contest does not accept new photos"
+    );
+
+    const hasSucceeded = await addNewPhoto(userId, contestId, photoDataBolb, fileType);
+
+    throwIfValidationFailed(hasSucceeded, 500, "adding a photo failed!");
+
+    res.send("POST /v1/contest is successful");
+  } catch (e) {
+    if (e instanceof ValidationException) {
+      res.status(e.errCode).send(e.errMessage);
+    } else {
+      res.status(500).send("failed for unknown reason");
+      console.log(e);
+    }
+  }
 });
 
-//   PUT /v1/photo  (body will contain: userId, array of [photoid, additionToScore])
-//   for each photo in the array it will find the photo with <photoid>, add to scoresSum the <additionToScore> and increase by one howManyVoted.
+//   PUT /v1/photo  (body will contain: userId, contestId, photosToUpdate:[{photoId, additionToScore},{...}])
+//   for each photo in the array it will find the photo with <photoId>, add to scoresSum the <additionToScore> and increase by one howManyVoted.
 //   if <user> is same as <userId> of the photo - return error (as it means user is trying to vote for himself)
 //   return error if contest is not in state of "voting"
-router.put("/v1/photo", (req, res) => {
-  res.send("PUT photo");
+router.put("/v1/photo", jsonParser, async (req, res) => {
+  try {
+    const { userId, contestId, photosToUpdate } = req?.body;
+
+    throwIfValidationFailed(userId && photosToUpdate && contestId, 400, "missing Parameters");
+    throwIfValidationFailed(
+      (await getContestState(contestId)) === ContestStates.UPLOADING,
+      400,
+      "Contest does not accept new photos"
+    );
+
+    const currentPhotosData = await getPhotosData(photosToUpdate.map((p) => p.photoId));
+    currentPhotosData.forEach((photoDataFromDb) => {
+      throwIfValidationFailed(photoDataFromDb.userId != userId, 400, "User cannot vote to his own photos");
+      const additionToScore = photosToUpdate.filter((p) => p.photoId == photoDataFromDb._id)[0].additionToScore;
+      photoDataFromDb.scoresSum += additionToScore;
+      photoDataFromDb.howManyVoted++;
+    });
+
+    const hasSucceeded = await updatePhotosData(currentPhotosData);
+
+    throwIfValidationFailed(hasSucceeded, 500, "update failed!");
+
+    res.send("PUT /v1/contest is successful");
+  } catch (e) {
+    if (e instanceof ValidationException) {
+      res.status(e.errCode).send(e.errMessage);
+    } else {
+      res.status(500).send("failed for unknown reason");
+      console.log(`failed because of ${e}`);
+    }
+  }
 });
 
 //   GET /v1/photo  (body will contain: contestId,userId)  OR:
@@ -31,39 +87,31 @@ router.put("/v1/photo", (req, res) => {
 //     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, score, photo
 //     return error if contest is not in state of "winning"
 //   if no winningPhotos:
-//     Will return an array of photos, for the cuurent contast, WITHOUT the photos taken by userId.
+//     Will return an array of photos, for the current contast, WITHOUT the photos taken by userId.
 //     return error if contestId, userId do not exist
-//     return error if contest is not in state of "voting"
-router.get("/v1/photo", (req, res) => {
-  if (req.query.winningPhotos) {
-    const contestId = 1;
-    if (getContestMode(contestId) != "winning") {
-      res.status(500).send("contest is not in winning mode");
+router.get("/v1/photo", jsonParser, async (req, res) => {
+  try {
+    const { contestId } = req?.body;
+    throwIfValidationFailed(contestId, 400, "missing Parameters");
+
+    if (req?.query?.winningPhotos) {
+      throwIfValidationFailed(
+        (await getContestState(contestId)) === ContestStates.SHOW_WINNERS,
+        400,
+        "Contest is not over yet"
+      );
+      res.send(await get3PhotosWithHighestScore(contestId));
     } else {
-      res.send(get3PhotosWithHighestScore(contestId));
+      const { userId } = req?.body;
+      throwIfValidationFailed(userId, 400, "missing Parameters");
+      const photos = await getPhotosForContest(contestId);
+      const filteredPhotos = photos.filter((p) => p.userId != userId);
+      res.send(filteredPhotos);
     }
-  } else {
-    res.send("GET photo");
+  } catch (e) {
+    if (e instanceof ValidationException) {
+      res.status(e.errCode).send(e.errMessage);
+    } else res.status(500).send("failed for unknown reason");
   }
 });
-
-//TODO implement this:
-const getContestMode = (contestId) => {
-  return "winning";
-};
-
-//TODO implement this:
-const get3PhotosWithHighestScore = (contestId) => {
-  const winningPhotosData = {
-    contestId,
-    winners: [
-      { userId: 1, score: 4, photo: "someUrl1" },
-      { userId: 2, score: 4.1, photo: "someUrl2" },
-      { userId: 3, score: 4.2, photo: "someUrl3" },
-    ],
-  };
-
-  return winningPhotosData;
-};
-
 module.exports = router;
