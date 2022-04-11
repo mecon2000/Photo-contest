@@ -82,9 +82,9 @@ router.put("/v1/photo", jsonParser, async (req, res) => {
 });
 
 //   GET /v1/photo  (body will contain: contestId,userId)  OR:
-//   GET /v1/photo?winningPhotos=true
+//   GET /v1/photo?winningPhotos=true (body will contain: contestId)
 //   if winningPhotos==true:
-//     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, score, photo
+//     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, averageScore, photoDataBolb, some more unimportant fields}
 //     return error if contest is not in state of "winning"
 //   if no winningPhotos:
 //     Will return an array of photos, for the current contast, WITHOUT the photos taken by userId.

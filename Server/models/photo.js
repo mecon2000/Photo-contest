@@ -9,13 +9,15 @@ const addNewPhoto = async (userId, contestId, photoDataBolb, fileType) => {
 };
 
 const get3PhotosWithHighestScore = async (contestId) => {
+  let allPhotos = await getPhotosForContest(contestId);
+  allPhotos.forEach((p) => {
+    p.averageScore = p.howManyVoted > 0 ? p.scoresSum / p.howManyVoted : 0;
+  });
+  allPhotos.sort((p1, p2) => p1.averageScore - p2.averageScore).reverse();
+
   const winningPhotosData = {
     contestId,
-    winners: [
-      { userId: 1, score: 4, photo: "someUrl1" },
-      { userId: 2, score: 4.1, photo: "someUrl2" },
-      { userId: 3, score: 4.2, photo: "someUrl3" },
-    ],
+    winners: allPhotos.splice(0, 3),
   };
 
   return winningPhotosData;
@@ -46,8 +48,7 @@ const updatePhotosData = async (photoDataArray) => {
 };
 
 const getPhotosForContest = async (contestId) => {
-  throw "not tested yet!!";
-  const query = { contestId }    
+  const query = { contestId };
   const result = await mongo.db().collection("photos").find(query).toArray();
   return result;
 };
