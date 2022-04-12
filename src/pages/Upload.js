@@ -82,9 +82,9 @@ export function Upload(props) {
   };
 
   const uploadAllPhotos = (e) => {
-    // const userId = 1
-    // const contestId = 1
-    uploadPhotos({ photos: photoFiles, contestId: 1, userId: 1 })
+    const userId = 1
+    const contestId = "6246f6f52971fd6c3df09976"
+    uploadPhotos({ photos: photoFiles, contestId, userId })
       .then(() => alert("photos uploaded!"))
       .catch((err) => {
         console.error(err);

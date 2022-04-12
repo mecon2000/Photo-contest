@@ -32,6 +32,7 @@ router.post("/v1/contest", jsonParser, async (req, res) => {
 
     res.send("POST /v1/contest is successful");
   } catch (e) {
+    console.log(e);
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
     } else res.status(500).send("failed for unknown reason");
@@ -59,6 +60,7 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
 
     res.send("PUT /v1/contest is successful");
   } catch (e) {
+    console.log(e);
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
     } else res.status(500).send("failed for unknown reason");
@@ -79,6 +81,7 @@ router.get("/v1/contest", jsonParser, async (req, res) => {
 
     res.send(contests);
   } catch (e) {
+    console.log(e);
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
     } else res.status(500).send("failed for unknown reason");

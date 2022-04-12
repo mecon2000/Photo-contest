@@ -3,10 +3,11 @@ const { ObjectId } = require("mongodb");
 
 const photosDBCollection = mongo.db().collection("photos")
 
-const addNewPhoto = async (userId, contestId, photoDataBolb, fileType) => {
-  let newPhoto = { userId, contestId, photoDataBolb, fileType, scoresSum: 0, howManyVoted: 0 };
-  const result = await photosDBCollection.insertOne(newPhoto);
-
+const addNewPhotos = async (userId, contestId, photos) => {
+  
+  const photosAsDocs = photos.map(p => ({
+    userId, contestId, photoDataBlob: p.photoDataBlob, fileType: p.fileType, scoresSum: 0, howManyVoted: 0  }))  
+  const result = await photosDBCollection.insertMany(photosAsDocs);
   return result.acknowledged;
 };
 
@@ -55,4 +56,4 @@ const getPhotosForContest = async (contestId) => {
   return result;
 };
 
-module.exports = { addNewPhoto, get3PhotosWithHighestScore, getPhotosData, updatePhotosData, getPhotosForContest };
+module.exports = { addNewPhotos, get3PhotosWithHighestScore, getPhotosData, updatePhotosData, getPhotosForContest };

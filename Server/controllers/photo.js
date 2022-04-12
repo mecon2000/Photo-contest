@@ -2,7 +2,7 @@ const express = require("express");
 const { ValidationException, throwIfValidationFailed } = require("../utils/validationsHelper");
 const { ContestStates } = require("../utils/enums");
 const {
-  addNewPhoto,
+  addNewPhotos,
   get3PhotosWithHighestScore,
   getPhotosData,
   updatePhotosData,
@@ -14,32 +14,32 @@ const { stringify } = require("../utils/stringHelpers");
 const jsonParser = bodyParser.json();
 var router = express.Router();
 
-//   POST /v1/photo (body will contain: contestId, userId, photoDataBolb, fileType)
+//   POST /v1/photo (body will contain: contestId, userId, photos:[{photoDataBlob, fileType}])
 //   it will write a new photo entity  (with scoresSum=0,howManyVoted=0)
 //   return error if contest is not in state of "uploading"
 router.post("/v1/photo", jsonParser, async (req, res) => {
   try {
-    const { userId, contestId, photoDataBolb, fileType } = req?.body;
+    const { userId, contestId, photos } = req?.body;
+    throwIfValidationFailed(userId && contestId && photos, 400, "missing Parameters");
+    photos.forEach((p) => throwIfValidationFailed(p.photoDataBlob && p.fileType, 400, "missing Parameters"));
 
-    throwIfValidationFailed(userId && contestId && photoDataBolb && fileType, 400, "missing Parameters");
+    console.log(`userId=${userId}, contestId=${contestId}, photos=${JSON.stringify(photos[1])}`);
     throwIfValidationFailed(
       (await getContestState(contestId)) == ContestStates.UPLOADING,
       400,
       "Contest does not accept new photos"
     );
 
-    const hasSucceeded = await addNewPhoto(userId, contestId, photoDataBolb, fileType);
+    const hasSucceeded = await addNewPhotos(userId, contestId, photos);
 
     throwIfValidationFailed(hasSucceeded, 500, "adding a photo failed!");
 
-    res.send("POST /v1/contest is successful");
+    res.send("POST /v1/photo is successful");
   } catch (e) {
+    console.log(e);
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
-    } else {
-      res.status(500).send("failed for unknown reason");
-      console.log(e);
-    }
+    } else res.status(500).send("failed for unknown reason");
   }
 });
 
@@ -72,19 +72,17 @@ router.put("/v1/photo", jsonParser, async (req, res) => {
 
     res.send("PUT /v1/contest is successful");
   } catch (e) {
+    console.log(e);
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
-    } else {
-      res.status(500).send("failed for unknown reason");
-      console.log(`failed because of ${e}`);
-    }
+    } else res.status(500).send("failed for unknown reason");
   }
 });
 
 //   GET /v1/photo  (body will contain: contestId,userId)  OR:
 //   GET /v1/photo?winningPhotos=true (body will contain: contestId)
 //   if winningPhotos==true:
-//     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, averageScore, photoDataBolb, some more unimportant fields}
+//     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, averageScore, photoDataBlob, some more unimportant fields}
 //     return error if contest is not in state of "winning"
 //   if no winningPhotos:
 //     Will return an array of photos, for the current contast, WITHOUT the photos taken by userId.
@@ -109,6 +107,7 @@ router.get("/v1/photo", jsonParser, async (req, res) => {
       res.send(filteredPhotos);
     }
   } catch (e) {
+    console.log(e);
     if (e instanceof ValidationException) {
       res.status(e.errCode).send(e.errMessage);
     } else res.status(500).send("failed for unknown reason");

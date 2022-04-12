@@ -1,21 +1,18 @@
 import { httpService } from "./httpService";
-const entity = "photo";
+const entity = "v1/photo";
 
 export const uploadPhotos = ({ photos, contestId, userId }) => {
-  const photosData = photos.map((photo) => ({
+  const photosData = photos.map((p) => ({
+    photoDataBlob: p.photoDataUrl,
+    fileType: p.type,
+  }));
+
+  const body = {
     contestId,
     userId,
-    photoDataUrl: photo.photoDataUrl,
-    type: photo.type,
-  }));
-  //for json-server
-  return Promise.all(
-    photosData.map((photo) => httpService.post(entity, photo))
-  );
-  /*
-    //for real backend
-   return httpService.post(entity, photosData);
-   */
+    photos: photosData,
+  };
+  return httpService.post(entity, body);
 };
 
 const getPhotoData = (photoId) => {
@@ -43,9 +40,9 @@ const setPhotoData = (photoId, photoData) => {
 };
 
 export const updatePhotoScore = async ({ photoId, voterId, newScore }) => {
-  //TODO: when we'll have a server, we won't need to getPhotoData just setPhotoData, 
-  //and let the server add new score to the existing ones 
-  
+  //TODO: when we'll have a server, we won't need to getPhotoData just setPhotoData,
+  //and let the server add new score to the existing ones
+
   let photoData = await getPhotoData(photoId);
   updatePhotoWithNewScore({ photoData, voterId, newScore });
   setPhotoData(photoId, photoData);
@@ -57,8 +54,6 @@ export const downloadAllPhotosWithScores = async ({ contestId, voterId }) => {
   //TODO: when we'll have a server, the resulting call should bring back array of objects with photo data
   //and ONLY the scores of this (else it'll be easy to fake the scores of other users)
   const photosData = await httpService.get(entity);
-
-
 
   photosData.map((p) => {
     const scoreOfVoter = p.scores?.find((s) => s.voterId === voterId);
