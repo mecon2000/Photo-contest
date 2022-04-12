@@ -24,7 +24,7 @@ const calcVotesAverage = (votes) => {
 const get3PhotosWithHighestScore = async (contestId) => {
   let allPhotos = await getPhotosForContest(contestId);
   allPhotos.forEach((p) => {
-    p.averageScore = calcVotesAverage(votes);
+    p.averageScore = calcVotesAverage(p.votes);
   });
   allPhotos.sort((p1, p2) => p1.averageScore - p2.averageScore).reverse();
 
