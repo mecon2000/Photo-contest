@@ -1,36 +1,39 @@
 import Axios from "axios";
 
-const BASE_URL = "http://localhost:4000/api/";
+const BASE_URL = "http://localhost:4000/";
 
 var axios = Axios.create({
   witCredentials: true,
 });
 
 export const httpService = {
-  get(endpoint, payload) {
-    return ajax(endpoint, "GET", payload);
+  get(endpoint, body, urlParams) {
+    return ajax(endpoint, "GET", body, urlParams);
   },
-  post(endpoint, payload) {
-    return ajax(endpoint, "POST", payload);
+  post(endpoint, body, urlParams) {
+    return ajax(endpoint, "POST", body, urlParams);
   },
-  put(endpoint, payload) {
-    return ajax(endpoint, "PUT", payload);
+  put(endpoint, body, urlParams) {
+    return ajax(endpoint, "PUT", body, urlParams);
   },
-  delete(endpoint, payload) {
-    return ajax(endpoint, "DELETE", payload);
+  delete(endpoint, body, urlParams) {
+    return ajax(endpoint, "DELETE", body, urlParams);
   },
 };
-async function ajax(endpoint, method, data) {
+async function ajax(endpoint, method, body, urlParams) {
   try {
+    //console.log (`bodyyyyyyyyyy = ${JSON.stringify(body)}`)
     const res = await axios({
       url: `${BASE_URL}${endpoint}`,
       method,
-      data,
+      data: body,
+      urlParams,
     });
     return res.data;
   } catch (err) {
-    console.error(
-      `Having hard times at trying to ${method.toLowerCase()} some data... mabye ${endpoint} found your payload offensive, have a look:`, data, err
+    const urlParamsAsString = new URLSearchParams(urlParams).toString();
+    console.error(      
+      `http call failed: ${method} ${endpoint}${urlParams? "?"+urlParamsAsString:""}, body=${JSON.stringify(body)} with this error: ${err}`
     );
     throw err;
   }
