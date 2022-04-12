@@ -28,9 +28,9 @@ export function Vote() {
         {photos.map((p, i) => {
           return (
             <SmallPhoto
-              src={p.photoDataUrl}
+              src={p.photoDataBlob}
               alt={i}
-              key={p.id}
+              key={`smallPhoto${i}`}
               id={p.id}
               score={p.score}
               setScore={(newScore) => updateScore(p.id, newScore)}
