@@ -48,19 +48,13 @@ export const updatePhotoScore = async ({ photoId, voterId, newScore }) => {
   setPhotoData(photoId, photoData);
 };
 
-export const downloadAllPhotosWithScores = async ({ contestId, voterId }) => {
-  //for json-server
-  const entity = `photo?contestId=${contestId}`;
-  //TODO: when we'll have a server, the resulting call should bring back array of objects with photo data
-  //and ONLY the scores of this (else it'll be easy to fake the scores of other users)
-  const photosData = await httpService.get(entity);
+export const downloadPhotos = async ({ contestId, userId }) => {
+  
+  const entity = `v1/photo`;
+  const urlParams = {userId, contestId}
+  
+  const photosData = await httpService.get(entity, undefined, urlParams);
 
-  photosData.map((p) => {
-    const scoreOfVoter = p.scores?.find((s) => s.voterId === voterId);
-    p.score = scoreOfVoter?.score;
-    delete p.scores;
-    return p;
-  });
 
   return photosData;
 };

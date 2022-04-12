@@ -23,7 +23,6 @@ router.post("/v1/photo", jsonParser, async (req, res) => {
     throwIfValidationFailed(userId && contestId && photos, 400, "missing Parameters");
     photos.forEach((p) => throwIfValidationFailed(p.photoDataBlob && p.fileType, 400, "missing Parameters"));
 
-    console.log(`userId=${userId}, contestId=${contestId}, photos=${JSON.stringify(photos[1])}`);
     throwIfValidationFailed(
       (await getContestState(contestId)) == ContestStates.UPLOADING,
       400,
@@ -79,8 +78,8 @@ router.put("/v1/photo", jsonParser, async (req, res) => {
   }
 });
 
-//   GET /v1/photo  (body will contain: contestId,userId)  OR:
-//   GET /v1/photo?winningPhotos=true (body will contain: contestId)
+//   GET /v1/photo?contestId=<id>&userId=<id>)  OR:
+//   GET /v1/photo?winningPhotos=true&contestId=<id>
 //   if winningPhotos==true:
 //     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, averageScore, photoDataBlob, some more unimportant fields}
 //     return error if contest is not in state of "winning"
@@ -89,7 +88,7 @@ router.put("/v1/photo", jsonParser, async (req, res) => {
 //     return error if contestId, userId do not exist
 router.get("/v1/photo", jsonParser, async (req, res) => {
   try {
-    const { contestId } = req?.body;
+    const { contestId } = req?.query;
     throwIfValidationFailed(contestId, 400, "missing Parameters");
 
     if (req?.query?.winningPhotos) {
@@ -100,7 +99,8 @@ router.get("/v1/photo", jsonParser, async (req, res) => {
       );
       res.send(await get3PhotosWithHighestScore(contestId));
     } else {
-      const { userId } = req?.body;
+      const { userId } = req?.query;
+
       throwIfValidationFailed(userId, 400, "missing Parameters");
       const photos = await getPhotosForContest(contestId);
       const filteredPhotos = photos.filter((p) => p.userId != userId);

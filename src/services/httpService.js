@@ -8,6 +8,7 @@ var axios = Axios.create({
 
 export const httpService = {
   get(endpoint, body, urlParams) {
+    if (body) console.error("axios didn't implement sending body!");
     return ajax(endpoint, "GET", body, urlParams);
   },
   post(endpoint, body, urlParams) {
@@ -20,20 +21,21 @@ export const httpService = {
     return ajax(endpoint, "DELETE", body, urlParams);
   },
 };
-async function ajax(endpoint, method, body, urlParams) {
+async function ajax(endpoint, method, body, params) {
   try {
-    //console.log (`bodyyyyyyyyyy = ${JSON.stringify(body)}`)
     const res = await axios({
       url: `${BASE_URL}${endpoint}`,
       method,
       data: body,
-      urlParams,
+      params,
     });
     return res.data;
   } catch (err) {
-    const urlParamsAsString = new URLSearchParams(urlParams).toString();
-    console.error(      
-      `http call failed: ${method} ${endpoint}${urlParams? "?"+urlParamsAsString:""}, body=${JSON.stringify(body)} with this error: ${err}`
+    const urlParamsAsString = new URLSearchParams(params).toString();
+    console.error(
+      `http call failed: ${method} ${endpoint}${params ? "?" + urlParamsAsString : ""}, body=${JSON.stringify(
+        body
+      )} with this error: ${err}`
     );
     throw err;
   }

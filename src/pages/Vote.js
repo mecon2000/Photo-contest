@@ -1,29 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { SmallPhoto } from "../components/SmallPhoto";
-import {
-  downloadAllPhotosWithScores,
-  updatePhotoScore,
-} from "../services/photoService";
+import { downloadPhotos, updatePhotoScore } from "../services/photoService";
 
 export function Vote() {
-  const voterId = 1;
-  const contestId = 1;
+  const userId = 1;
+  const contestId = "6246f6f52971fd6c3df09976";
   const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
     const getAllPhotos = async () => {
-      const photosData = await downloadAllPhotosWithScores({
-        contestId,
-        voterId,
-      });
+      const photosData = await downloadPhotos({ contestId, userId });
       setPhotos(photosData);
     };
     getAllPhotos();
   }, []);
 
   const updateScore = (photoId, newScore) => {
-    const voterId = 1;
-    updatePhotoScore({ photoId, voterId, newScore });
+    updatePhotoScore({ photoId, userId, newScore });
     photos.find((p) => p.id === photoId).score = newScore;
     setPhotos([...photos]);
   };
