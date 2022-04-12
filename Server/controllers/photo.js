@@ -15,7 +15,7 @@ const jsonParser = bodyParser.json();
 var router = express.Router();
 
 //   POST /v1/photo (body will contain: contestId, userId, photos:[{photoDataBlob, fileType}])
-//   it will write a new photo entity  (with scoresSum=0,howManyVoted=0)
+//   it will write a new photo entity
 //   return error if contest is not in state of "uploading"
 router.post("/v1/photo", jsonParser, async (req, res) => {
   try {
@@ -42,30 +42,25 @@ router.post("/v1/photo", jsonParser, async (req, res) => {
   }
 });
 
-//   PUT /v1/photo  (body will contain: userId, contestId, photosToUpdate:[{photoId, additionToScore},{...}])
-//   for each photo in the array it will find the photo with <photoId>, add to scoresSum the <additionToScore> and increase by one howManyVoted.
+//   PUT /v1/photo  (body will contain: userId, contestId, photoId, score
+//   will add to the list of scores another {userId, score}
 //   if <user> is same as <userId> of the photo - return error (as it means user is trying to vote for himself)
 //   return error if contest is not in state of "voting"
 router.put("/v1/photo", jsonParser, async (req, res) => {
   try {
-    const { userId, contestId, photosToUpdate } = req?.body;
+    const { userId, contestId, photoId, score } = req?.body;
+    throwIfValidationFailed(userId && contestId && photoId && score, 400, `missing Parameters`);
+    const contestState = await getContestState(contestId);
+    throwIfValidationFailed(contestState === ContestStates.VOTING, 400, "Contest does not accept new votes");
 
-    throwIfValidationFailed(userId && photosToUpdate && contestId, 400, "missing Parameters");
-    throwIfValidationFailed(
-      (await getContestState(contestId)) === ContestStates.UPLOADING,
-      400,
-      "Contest does not accept new photos"
-    );
+    const [photoFromDb] = await getPhotosData([photoId]);
 
-    const currentPhotosData = await getPhotosData(photosToUpdate.map((p) => p.photoId));
-    currentPhotosData.forEach((photoDataFromDb) => {
-      throwIfValidationFailed(photoDataFromDb.userId != userId, 400, "User cannot vote to his own photos");
-      const additionToScore = photosToUpdate.filter((p) => p.photoId == photoDataFromDb._id)[0].additionToScore;
-      photoDataFromDb.scoresSum += additionToScore;
-      photoDataFromDb.howManyVoted++;
-    });
+    throwIfValidationFailed(photoFromDb.userId != userId, 400, "User cannot vote to his own photos");
+    const ind = photoFromDb.votes.findIndex((v) => v.userId == userId);
+    if (ind === -1) photoFromDb.votes.push({ userId, score });
+    else photoFromDb.votes[ind] = { userId, score };
 
-    const hasSucceeded = await updatePhotosData(currentPhotosData);
+    const hasSucceeded = await updatePhotosData([photoFromDb]);
 
     throwIfValidationFailed(hasSucceeded, 500, "update failed!");
 
@@ -84,7 +79,7 @@ router.put("/v1/photo", jsonParser, async (req, res) => {
 //     will return the 3 photos with highest score. (returns: contestId, for each photo {userId, averageScore, photoDataBlob, some more unimportant fields}
 //     return error if contest is not in state of "winning"
 //   if no winningPhotos:
-//     Will return an array of photos, for the current contast, WITHOUT the photos taken by userId.
+//     Will return an array of photos, for the current contast, WITHOUT the photos taken by userId, and without the scores
 //     return error if contestId, userId do not exist
 router.get("/v1/photo", jsonParser, async (req, res) => {
   try {
@@ -103,8 +98,11 @@ router.get("/v1/photo", jsonParser, async (req, res) => {
 
       throwIfValidationFailed(userId, 400, "missing Parameters");
       const photos = await getPhotosForContest(contestId);
-      const filteredPhotos = photos.filter((p) => p.userId != userId);
-      res.send(filteredPhotos);
+      const photosWithoutCurrentUser = photos.filter((p) => p.userId != userId);
+      photosWithoutCurrentUser.forEach((p) => {
+        delete p.votes;
+      });
+      res.send(photosWithoutCurrentUser);
     }
   } catch (e) {
     console.log(e);

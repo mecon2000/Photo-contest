@@ -5,7 +5,7 @@ import { PhotoDetails } from "../components/PhotoDetails";
 import StarRatings from "react-star-ratings";
 
 export function SmallPhoto(props) {
-  const { src, setScore, score, id, shouldShowScore = true } = props;
+  const { src, setScore, score, shouldShowScore = true } = props;
   const [showPhotoDetails, setShowPhotoDetails] = useState(false);
 
   return (

@@ -16,8 +16,8 @@ export function Vote() {
   }, []);
 
   const updateScore = (photoId, newScore) => {
-    updatePhotoScore({ photoId, userId, newScore });
-    photos.find((p) => p.id === photoId).score = newScore;
+    updatePhotoScore({ userId, contestId, photoId, score: newScore });
+    photos.find((p) => p._id === photoId).score = newScore;
     setPhotos([...photos]);
   };
 
@@ -31,9 +31,9 @@ export function Vote() {
               src={p.photoDataBlob}
               alt={i}
               key={`smallPhoto${i}`}
-              id={p.id}
+              id={p._id}
               score={p.score}
-              setScore={(newScore) => updateScore(p.id, newScore)}
+              setScore={(newScore) => updateScore(p._id, newScore)}
             />
           );
         })}

@@ -15,37 +15,9 @@ export const uploadPhotos = ({ photos, contestId, userId }) => {
   return httpService.post(entity, body);
 };
 
-const getPhotoData = (photoId) => {
-  const photoData = httpService.get(`photo/${photoId}`);
-  return photoData;
-};
-
-const updatePhotoWithNewScore = ({ photoData, voterId, newScore }) => {
-  if (!photoData.scores) {
-    photoData.scores = [];
-  }
-
-  let scoreOfThisVoter = photoData.scores.find((p) => {
-    return p.voterId === voterId;
-  });
-  if (scoreOfThisVoter) {
-    scoreOfThisVoter.score = newScore;
-  } else {
-    photoData.scores.push({ voterId, score: newScore });
-  }
-};
-
-const setPhotoData = (photoId, photoData) => {
-  httpService.put(`photo/${photoId}`, photoData);
-};
-
-export const updatePhotoScore = async ({ photoId, voterId, newScore }) => {
-  //TODO: when we'll have a server, we won't need to getPhotoData just setPhotoData,
-  //and let the server add new score to the existing ones
-
-  let photoData = await getPhotoData(photoId);
-  updatePhotoWithNewScore({ photoData, voterId, newScore });
-  setPhotoData(photoId, photoData);
+export const updatePhotoScore = async ({userId, contestId, photoId, score}) => {
+  const body = {userId, contestId, photoId, score}
+  httpService.put(`v1/photo`, body);
 };
 
 export const downloadPhotos = async ({ contestId, userId }) => {

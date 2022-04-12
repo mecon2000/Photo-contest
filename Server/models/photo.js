@@ -1,20 +1,30 @@
 const { mongo } = require("../models/dbHandler");
 const { ObjectId } = require("mongodb");
 
-const photosDBCollection = mongo.db().collection("photos")
+const photosDBCollection = mongo.db().collection("photos");
 
 const addNewPhotos = async (userId, contestId, photos) => {
-  
-  const photosAsDocs = photos.map(p => ({
-    userId, contestId, photoDataBlob: p.photoDataBlob, fileType: p.fileType, scoresSum: 0, howManyVoted: 0  }))  
+  const photosAsDocs = photos.map((p) => ({
+    userId,
+    contestId,
+    photoDataBlob: p.photoDataBlob,
+    fileType: p.fileType,
+    votes: [],
+  }));
   const result = await photosDBCollection.insertMany(photosAsDocs);
   return result.acknowledged;
+};
+
+const calcVotesAverage = (votes) => {
+  if (votes.length === 0) return 0;
+  const sum = votes.reduce((prev, curr) => prev + curr.score, 0);
+  return sum / votes.length;
 };
 
 const get3PhotosWithHighestScore = async (contestId) => {
   let allPhotos = await getPhotosForContest(contestId);
   allPhotos.forEach((p) => {
-    p.averageScore = p.howManyVoted > 0 ? p.scoresSum / p.howManyVoted : 0;
+    p.averageScore = calcVotesAverage(votes);
   });
   allPhotos.sort((p1, p2) => p1.averageScore - p2.averageScore).reverse();
 
