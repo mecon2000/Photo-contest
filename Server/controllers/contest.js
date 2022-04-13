@@ -1,4 +1,9 @@
-const { ValidationException, throwIfValidationFailed } = require("../utils/validationsHelper");
+const {
+  ValidationException,
+  throwIfValidationFailed,
+  throwIfMissingParams,
+  logAndSendError,
+} = require("../utils/validationsHelper");
 const { ContestStates, isContestStateValid } = require("../utils/enums");
 const {
   addNewContest,
@@ -22,7 +27,7 @@ router.post("/v1/contest", jsonParser, async (req, res) => {
     const userId = req?.body?.userId;
     const contestName = req?.body?.name;
 
-    throwIfValidationFailed(userId && contestName, 400, "missing Parameters");
+    throwIfMissingParams({ userId, contestName });
     throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
     throwIfValidationFailed(!isContestNameExists(contestName), 400, "Contest name already exists");
 
@@ -32,10 +37,7 @@ router.post("/v1/contest", jsonParser, async (req, res) => {
 
     res.send("POST /v1/contest is successful");
   } catch (e) {
-    console.log(e);
-    if (e instanceof ValidationException) {
-      res.status(e.errCode).send(e.errMessage);
-    } else res.status(500).send("failed for unknown reason");
+    logAndSendError(e, res);
   }
 });
 
@@ -49,7 +51,7 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
     const contestId = req?.body?.contestId;
     const newState = req?.body?.newState;
 
-    throwIfValidationFailed(userId && contestId && newState, 400, "missing Parameters");
+    throwIfMissingParams({ userId, contestId, newState });
     throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
     throwIfValidationFailed(isContestStateValid(newState), 400, "Contest state isn't valid");
     throwIfValidationFailed(isContestIdExists(contestId), 400, "Contest Id doesn't exist");
@@ -60,10 +62,7 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
 
     res.send("PUT /v1/contest is successful");
   } catch (e) {
-    console.log(e);
-    if (e instanceof ValidationException) {
-      res.status(e.errCode).send(e.errMessage);
-    } else res.status(500).send("failed for unknown reason");
+    logAndSendError(e, res);
   }
 });
 
@@ -74,17 +73,14 @@ router.get("/v1/contest", jsonParser, async (req, res) => {
   try {
     const userId = req?.body?.userId;
 
-    throwIfValidationFailed(userId, 400, "missing Parameters");
+    throwIfMissingParams({ userId });
     throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
 
     const contests = await getAllContests();
 
     res.send(contests);
   } catch (e) {
-    console.log(e);
-    if (e instanceof ValidationException) {
-      res.status(e.errCode).send(e.errMessage);
-    } else res.status(500).send("failed for unknown reason");
+    logAndSendError(e, res);
   }
 });
 
