@@ -1,0 +1,19 @@
+.state-wrapper {
+  display: grid;
+  grid-auto-flow: column;
+  width: fit-content;
+  border-radius: 5px;
+  background: rgb(255, 155, 155);
+  margin: 2px;
+}
+
+.state {
+  
+  padding: 1px 10px;
+}
+
+.selected-state {
+  background: red;
+  padding: 1px 10px;
+  border-radius: 5px;
+}
