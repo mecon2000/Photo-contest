@@ -17,11 +17,10 @@ export const uploadPhotos = ({ photos, contestId, userId }) => {
 
 export const updatePhotoScore = async ({ userId, contestId, photoId, score }) => {
   const body = { userId, contestId, photoId, score };
-  httpService.put(`v1/photo`, body);
+  httpService.put(entity, body);
 };
 
 export const downloadPhotos = async ({ contestId, userId }) => {
-  const entity = `v1/photo`;
   const urlParams = { userId, contestId };
 
   const photosData = await httpService.get(entity, undefined, urlParams);
@@ -30,7 +29,6 @@ export const downloadPhotos = async ({ contestId, userId }) => {
 };
 
 export const getWinners = async (contestId) => {
-  const entity = `v1/photo`;
   const urlParams = { winningPhotos: true, contestId };
 
   const photosData = await httpService.get(entity, undefined, urlParams);

@@ -31,14 +31,23 @@ const getAllContests = async () => {
 };
 
 const isContestNameExists = async (contestName) => {
-  console.log(`mock checking if contest ${contestName} already exists in the DB`);
-  return false;
+  const query = { name: contestName };
+  const result = await contestsDBCollection.findOne(query);
+  return !!result;
 };
 
 const isContestIdExists = async (contestId) => {
-  console.log(`mock checking if contest "${stringify(contestId)}" exists in the DB`);
-  return true;
+  const query = { _id: ObjectId(contestId) };
+  const result = await contestsDBCollection.findOne(query);
+  return !!result;
 };
+
+const deleteContest = async (contestId) => {
+  const query = { _id: ObjectId(contestId) };
+  const result = await contestsDBCollection.deleteOne(query);
+  return result.deletedCount === 1;
+};
+
 
 module.exports = {
   addNewContest,
@@ -47,4 +56,5 @@ module.exports = {
   getAllContests,
   isContestNameExists,
   isContestIdExists,
+  deleteContest
 };

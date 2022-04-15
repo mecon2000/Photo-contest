@@ -11,6 +11,7 @@ const {
   getAllContests,
   isContestNameExists,
   isContestIdExists,
+  deleteContest
 } = require("../models/contest");
 const { isUserAdmin } = require("../models/user");
 const express = require("express");
@@ -28,14 +29,37 @@ router.post("/v1/contest", jsonParser, async (req, res) => {
     const contestName = req?.body?.name;
 
     throwIfMissingParams({ userId, contestName });
-    throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
-    throwIfValidationFailed(!isContestNameExists(contestName), 400, "Contest name already exists");
+    throwIfValidationFailed(await isUserAdmin(userId), 401, "User is not admin!");
+    throwIfValidationFailed(await !isContestNameExists(contestName), 400, "Contest name already exists");
 
     const hasSucceeded = await addNewContest(contestName);
 
     throwIfValidationFailed(hasSucceeded, 500, "adding a contest failed!");
 
     res.send("POST /v1/contest is successful");
+  } catch (e) {
+    logAndSendError(e, res);
+  }
+});
+
+//   DELETE /v1/contest (body must contain: userId, contestId)
+//   will delete an existing contest
+//   return error if userId is not admin
+//   return error if contestId doesn't exist
+router.delete("/v1/contest", jsonParser, async (req, res) => {
+  try {
+    const userId = req?.body?.userId;
+    const contestId = req?.body?.contestId;
+
+    throwIfMissingParams({ userId, contestId });
+    throwIfValidationFailed(await isUserAdmin(userId), 401, "User is not admin!");
+    throwIfValidationFailed(await isContestIdExists(contestId), 400, "Contest Id doesn't exists");
+
+    const hasSucceeded = await deleteContest(contestId);
+
+    throwIfValidationFailed(hasSucceeded, 500, "deleting contest failed!");
+
+    res.send("DELETE /v1/contest is successful");
   } catch (e) {
     logAndSendError(e, res);
   }
@@ -52,9 +76,9 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
     const newState = req?.body?.newState;
 
     throwIfMissingParams({ userId, contestId, newState });
-    throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
-    throwIfValidationFailed(isContestStateValid(newState), 400, "Contest state isn't valid");
-    throwIfValidationFailed(isContestIdExists(contestId), 400, "Contest Id doesn't exist");
+    throwIfValidationFailed(await isUserAdmin(userId), 401, "User is not admin!");
+    throwIfValidationFailed(await isContestStateValid(newState), 400, "Contest state isn't valid");
+    throwIfValidationFailed(await isContestIdExists(contestId), 400, "Contest Id doesn't exist");
 
     const hasSucceeded = await updateContestState(contestId, newState);
 
@@ -71,10 +95,10 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
 //   return error if userId is not admin
 router.get("/v1/contest", jsonParser, async (req, res) => {
   try {
-    const userId = req?.body?.userId;
+    const userId = req?.query?.userId;
 
     throwIfMissingParams({ userId });
-    throwIfValidationFailed(isUserAdmin(userId), 401, "User is not admin!");
+    throwIfValidationFailed(await isUserAdmin(userId), 401, "User is not admin!");
 
     const contests = await getAllContests();
 

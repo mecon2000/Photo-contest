@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getContests, addContest,updateContest,deleteContest } from "../services/contestService"
 import { MultiToggler } from "../components/MultiToggler";
 import removeImg from "../images/remove.png";
 import uploadImg from "../images/upload.png";
 
 export function Contests() {
-  const [contests, setContests] = useState([
-    { name: "black&white", id: "1", state: "voting" },
-    { name: "contesttt 2", id: "2", state: "uploading" },
-    { name: "IDK MAN", id: "3", state: "show winners" },
-  ]);
+  const [contests, setContests] = useState([]);
+  //   { name: "black&white", id: "1", state: "voting" },
+  //   { name: "contesttt 2", id: "2", state: "uploading" },
+  //   { name: "IDK MAN", id: "3", state: "show winners" },
+  // ]);
+
+  const userId = 1
+  useEffect(() => {
+    const getAllContests = async () => {
+      setContests(await getContests({ userId }));
+    };
+    getAllContests();
+  }, []);
+
+
   // useEffect; //getcontests
   // useEffect; //updateContest
   // useEffect; //addContest
