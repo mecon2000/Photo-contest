@@ -6,7 +6,7 @@ export function MultiToggler(props) {
 
   const handleClick = (s) => {
     setSelectedState(s);
-    props.onClick(s);
+    if (props.onClick) props.onClick(s);
   };
 
   return (

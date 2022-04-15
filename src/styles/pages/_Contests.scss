@@ -1,0 +1,29 @@
+.contests-container {
+  display: grid;
+  grid-auto-flow: row;
+  width: fit-content;
+  margin: 2px;
+}
+
+.contest {
+  padding: 1px 10px;
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.contest-name {
+    width: 200px;
+    font-size: large;
+}
+
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.contest-button {
+  height:30px; //TODO find a more robust way, like depending on parent height
+}
