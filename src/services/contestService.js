@@ -1,7 +1,7 @@
 import { httpService } from "./httpService";
 const entity = "v1/contest";
 
-export const updateContest = async ({ userId, contestId, state: newState }) => {
+export const updateContest = async ({ userId, contestId, newState }) => {
   const body = { userId, contestId, newState };
   httpService.put(entity, body);
   //TODO handle error in all funcs here and in photoService
