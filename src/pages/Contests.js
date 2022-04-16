@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import ReactTooltip from "react-tooltip";
 import { getContests, addContest, updateContest, deleteContest } from "../services/contestService";
 import { MultiToggler } from "../components/MultiToggler";
+import { AddButton } from "../components/AddButton";
+
 import removeImg from "../images/remove.png";
-import uploadImg from "../images/upload.png";
+import gotoImg from "../images/goto.png";
 
 export function Contests() {
   const [contests, setContests] = useState([]);
@@ -24,6 +27,9 @@ export function Contests() {
   const gotoContest = (contestId) => {
     console.log(`go to ${contestId}`);
   };
+  const addContest = (contestName) => {
+    console.log(`adding ${contestName}`);
+  };
 
   const handleDeletion = (contestName, contestId) => {
     if (window.confirm(`Are you sure you want to delete the contest "${contestName}"`)) {
@@ -39,6 +45,7 @@ export function Contests() {
   return (
     <div className="page-wrapper">
       <div className="contests-container">
+        <h1>Contests:</h1>
         {contests.map((c, i) => {
           return (
             <div className="contest" key={"contest" + i}>
@@ -49,15 +56,31 @@ export function Contests() {
                 onClick={(newState) => updateContest({ userId, contestId: c._id, newState })}
               />
               <img
+                data-tip
+                data-for="deleteTip"
                 className="contest-button"
                 src={removeImg}
                 alt="delete contest"
                 onClick={(e) => handleDeletion(c.name, c._id)}
               />
-              <img className="contest-button" src={uploadImg} alt="goto contest" onClick={(e) => gotoContest(c._id)} />
+              <ReactTooltip id="deleteTip" place="top" effect="solid" delayShow={300}>
+                delete contest
+              </ReactTooltip>
+              <img
+                data-tip
+                data-for="gotoTip"
+                className="contest-button"
+                src={gotoImg}
+                alt="goto contest"
+                onClick={(e) => gotoContest(c._id)}
+              />
+              <ReactTooltip id="gotoTip" place="top" effect="solid" delayShow={300}>
+                go to the contest
+              </ReactTooltip>
             </div>
           );
         })}
+        <AddButton onAdd={addContest} submitButtonText={"Add contest"}/>
       </div>
     </div>
   );
