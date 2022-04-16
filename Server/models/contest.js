@@ -9,7 +9,7 @@ const addNewContest = async (contestName) => {
   let newContest = { name: contestName, state: ContestStates.UPLOADING };
   const result = await contestsDBCollection.insertOne(newContest);
 
-  return result.acknowledged;
+  return {acknowledged: result.acknowledged, _id: result.insertedId};
 };
 
 const getContestState = async (contestId) => {

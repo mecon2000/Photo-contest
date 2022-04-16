@@ -21,25 +21,25 @@ export function Contests() {
     getAllContests();
   }, []);
 
-  // useEffect; //addContest
-  //gotoContest
-
   const gotoContest = (contestId) => {
     console.log(`go to ${contestId}`);
   };
-  const addContest = (contestName) => {
-    console.log(`adding ${contestName}`);
-  };
 
-  const handleDeletion = (contestName, contestId) => {
+  const handleDeletion = async (contestName, contestId) => {
     if (window.confirm(`Are you sure you want to delete the contest "${contestName}"`)) {
-      deleteContest({ userId, contestId });
+      await deleteContest({ userId, contestId });
       const index = contests.findIndex((c) => c._id === contestId);
       setContests((list) => {
         list.splice(index, 1);
         return [...list];
       });
     }
+  };
+
+  const handleAddingContest = async (contestName) => {
+    await addContest({ userId, contestName });
+    let c = await getContests({ userId });
+    setContests([...c]);
   };
 
   return (
@@ -80,7 +80,11 @@ export function Contests() {
             </div>
           );
         })}
-        <AddButton onAdd={addContest} submitButtonText={"Add contest"}/>
+        <AddButton
+          onAdd={(contestName) => handleAddingContest(contestName)}
+          placeholder="name of new contest"
+          submitButtonText="Add contest"
+        />
       </div>
     </div>
   );

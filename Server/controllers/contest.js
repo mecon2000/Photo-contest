@@ -11,7 +11,7 @@ const {
   getAllContests,
   isContestNameExists,
   isContestIdExists,
-  deleteContest
+  deleteContest,
 } = require("../models/contest");
 const { isUserAdmin } = require("../models/user");
 const express = require("express");
@@ -19,24 +19,25 @@ const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const router = express.Router();
 
-//   POST /v1/contest (body must contain: userId, name (of contest))
+//   POST /v1/contest (body must contain: userId, contestName (of contest))
 //   will create a new contest and put it in state of "uploading".
 //   return error if userId is not admin
 //   return error if Name already exists
 router.post("/v1/contest", jsonParser, async (req, res) => {
   try {
     const userId = req?.body?.userId;
-    const contestName = req?.body?.name;
+    const contestName = req?.body?.contestName;
 
     throwIfMissingParams({ userId, contestName });
     throwIfValidationFailed(await isUserAdmin(userId), 401, "User is not admin!");
-    throwIfValidationFailed(await !isContestNameExists(contestName), 400, "Contest name already exists");
+    const isNameExists = await isContestNameExists(contestName);
+    throwIfValidationFailed(!isNameExists, 400, "Contest name already exists");
 
     const hasSucceeded = await addNewContest(contestName);
 
-    throwIfValidationFailed(hasSucceeded, 500, "adding a contest failed!");
+    throwIfValidationFailed(hasSucceeded.acknowledged, 500, "adding a contest failed!");
 
-    res.send("POST /v1/contest is successful");
+    res.send(hasSucceeded._id);
   } catch (e) {
     logAndSendError(e, res);
   }

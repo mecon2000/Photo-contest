@@ -7,9 +7,9 @@ export const updateContest = async ({ userId, contestId, newState }) => {
   //TODO handle error in all funcs here and in photoService
 };
 
-export const addContest = async ({ userId, contestId, name }) => {
-  const body = { userId, contestId, name };
-  httpService.post(entity, body);
+export const addContest = async ({ userId, contestName }) => {
+  const body = { userId, contestName };
+  return httpService.post(entity, body);
 };
 
 export const deleteContest = async ({ userId, contestId }) => {
