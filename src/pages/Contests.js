@@ -18,7 +18,6 @@ export function Contests() {
     getAllContests();
   }, []);
 
-  // useEffect; //getcontests
   // useEffect; //addContest
   //gotoContest
 
@@ -27,8 +26,14 @@ export function Contests() {
   };
 
   const handleDeletion = (contestName, contestId) => {
-    if (window.confirm(`Are you sure you want to delete the contes \"${contestName}\"`))
+    if (window.confirm(`Are you sure you want to delete the contest "${contestName}"`)) {
       deleteContest({ userId, contestId });
+      const index = contests.findIndex((c) => c._id === contestId);
+      setContests((list) => {
+        list.splice(index, 1);
+        return [...list];
+      });
+    }
   };
 
   return (
