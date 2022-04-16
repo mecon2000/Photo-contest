@@ -1,4 +1,5 @@
 import React, { useEffect, useState, createContext } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FileList } from "../components/FileList";
 import { ModalScreen } from "../components/ModalScreen";
 import { PhotoDetails } from "../components/PhotoDetails";
@@ -7,6 +8,8 @@ import { capitalizeFirstLetter } from "../services/utilService";
 
 export function Upload(props) {
   const [photoFiles, setPhotoFiles] = useState([]);
+  const [searchParams] = useSearchParams();
+    const contestId = searchParams.get("contestId");
   useEffect(
     (prev) => {
       console.log({ prevPhotoFiles: prev, photoFiles: photoFiles });
@@ -40,9 +43,7 @@ export function Upload(props) {
 
   const uniquify = (files) => {
     return files.filter(
-      (file, index, arr) =>
-        index ===
-        arr.findIndex((v) => v.name === file.name && v.size === file.size)
+      (file, index, arr) => index === arr.findIndex((v) => v.name === file.name && v.size === file.size)
     );
   };
 
@@ -60,10 +61,7 @@ export function Upload(props) {
 
   const handleFiles = async (newFiles) => {
     const newFilesArr = Array.from(newFiles);
-    const uniqueFiles = uniquify([
-      ...photoFiles,
-      ...validateFiles(newFilesArr),
-    ]);
+    const uniqueFiles = uniquify([...photoFiles, ...validateFiles(newFilesArr)]);
 
     await Promise.all(
       uniqueFiles.map(async (file) => {
@@ -82,8 +80,7 @@ export function Upload(props) {
   };
 
   const uploadAllPhotos = (e) => {
-    const userId = 1
-    const contestId = "6246f6f52971fd6c3df09976"
+    const userId = 1;    
     uploadPhotos({ photos: photoFiles, contestId, userId })
       .then(() => alert("photos uploaded!"))
       .catch((err) => {
@@ -101,30 +98,17 @@ export function Upload(props) {
   const openPhoto = (src) => setPhotoDetailsSrc(src);
   const closePhoto = () => setPhotoDetailsSrc(null);
   const username = props.match?.params?.user || "";
-  const title = capitalizeFirstLetter(
-    `${username && username + ", "}upload your photos here: `
-  );
+  const title = capitalizeFirstLetter(`${username && username + ", "}upload your photos here: `);
 
   return (
     <main className="main-container">
       <h1>{title}</h1>
-      <label
-        className="drop-container"
-        onDragOver={noop}
-        onDragEnter={noop}
-        onDragLeave={noop}
-        onDrop={onFilesDrop}
-      >
+      <label className="drop-container" onDragOver={noop} onDragEnter={noop} onDragLeave={noop} onDrop={onFilesDrop}>
         <div className="drop-message">
           <div className="upload-icon"></div>
           Drag & Drop files here or click to select file(s)
         </div>
-        <input
-          className="file-input"
-          type="file"
-          multiple
-          onChange={onSelectedFilesChanged}
-        />
+        <input className="file-input" type="file" multiple onChange={onSelectedFilesChanged} />
       </label>
       <CallbackContext.Provider value={{ removePhoto, openPhoto }}>
         <FileList validFiles={photoFiles} />
@@ -133,11 +117,7 @@ export function Upload(props) {
 
       {photoDetailsSrc && (
         <ModalScreen onClick={closePhoto}>
-          <PhotoDetails
-            onClick={(ev) => ev.stopPropagation()}
-            closePhoto={closePhoto}
-            src={photoDetailsSrc}
-          />
+          <PhotoDetails onClick={(ev) => ev.stopPropagation()} closePhoto={closePhoto} src={photoDetailsSrc} />
         </ModalScreen>
       )}
     </main>

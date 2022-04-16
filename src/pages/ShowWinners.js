@@ -1,10 +1,12 @@
 import React, { useState,useEffect } from "react";
 import { getWinners } from "../services/photoService";
+import { useSearchParams } from "react-router-dom";
 
 
 export function ShowWinners() {
   const [winners, setWinners] = useState([]);
-  const contestId = "6246f6f52971fd6c3df09976"
+  const [searchParams] = useSearchParams();
+  const contestId = searchParams.get("contestId")
 
   useEffect(() => {
     const getWinningPhotos = async () => {
@@ -12,7 +14,7 @@ export function ShowWinners() {
       setWinners(winningPhotos);
     };
     getWinningPhotos();
-  }, []);  
+  }, [contestId]);  
    
   return (winners.length ? <main className="main-container show-winners">
     <h2>And The Winner is...</h2>

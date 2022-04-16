@@ -78,7 +78,7 @@ router.put("/v1/contest", jsonParser, async (req, res) => {
 
     throwIfMissingParams({ userId, contestId, newState });
     throwIfValidationFailed(await isUserAdmin(userId), 401, "User is not admin!");
-    throwIfValidationFailed(await isContestStateValid(newState), 400, "Contest state isn't valid");
+    throwIfValidationFailed(await isContestStateValid(newState), 400, "Contest state isn't valid", newState);
     throwIfValidationFailed(await isContestIdExists(contestId), 400, "Contest Id doesn't exist");
 
     const hasSucceeded = await updateContestState(contestId, newState);
