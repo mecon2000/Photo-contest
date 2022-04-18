@@ -3,7 +3,7 @@ import linkedInLogo from "../../images/linkedin.png";
 
 function Footer() {
   return (
-    <footer className="Footer">
+    <footer className="footer">
       <hr />
       <div className="footer-content">
         Rong
